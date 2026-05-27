@@ -14,230 +14,313 @@ namespace WinFormsApp1
 
         private void InitializeComponent()
         {
-            lblTitle         = new Label();
-            lblInnLabel      = new Label();
-            txtInn           = new TextBox();
-            btnCheck         = new Button();
-            lblHint          = new Label();
-            pnlResults       = new Panel();
-            lblCompanyName   = new Label();
-            lblInnKppOgrn    = new Label();
-            lblAddress       = new Label();
-            lblDirector      = new Label();
-            lblChecksTitle   = new Label();
-            chkTaxDebtor     = new CheckBox();
+            lblTitle = new Label();
+            lblInnLabel = new Label();
+            txtInn = new TextBox();
+            btnCheck = new Button();
+            lblHint = new Label();
+            pnlResults = new Panel();
+            lblCompanyName = new Label();
+            lblInnKppOgrn = new Label();
+            lblAddress = new Label();
+            lblDirector = new Label();
+            lblChecksTitle = new Label();
+            chkTaxDebtor = new CheckBox();
             lblTaxDebtorNote = new Label();
-            chkBankrupt      = new CheckBox();
-            lblBankruptNote  = new Label();
-            chkDisqualified  = new CheckBox();
-            lblDisqualNote   = new Label();
-            lblStatusLabel   = new Label();
-            txtStatus        = new TextBox();
-            pnlBottom        = new Panel();
-            btnClose         = new Button();
-            btnCheckAgain    = new Button();
-
+            chkBankrupt = new CheckBox();
+            lblBankruptNote = new Label();
+            chkDisqualified = new CheckBox();
+            lblDisqualNote = new Label();
+            lblStatusLabel = new Label();
+            txtStatus = new TextBox();
+            pnlBottom = new Panel();
+            btnClose = new Button();
+            btnCheckAgain = new Button();
             pnlResults.SuspendLayout();
             pnlBottom.SuspendLayout();
             SuspendLayout();
-
-            // ── lblTitle ──────────────────────────────────────────────────────────
-            lblTitle.Dock      = DockStyle.Top;
-            lblTitle.Font      = new Font("Arial", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            lblTitle.Height    = 48;
-            lblTitle.Name      = "lblTitle";
-            lblTitle.Padding   = new Padding(10, 10, 0, 0);
-            lblTitle.Text      = "Проверка контрагента по ИНН";
-
-            // ── lblInnLabel ───────────────────────────────────────────────────────
+            // 
+            // lblTitle
+            // 
+            lblTitle.Dock = DockStyle.Top;
+            lblTitle.Font = new Font("Arial", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            lblTitle.Location = new Point(0, 0);
+            lblTitle.Margin = new Padding(5, 0, 5, 0);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Padding = new Padding(16, 16, 0, 0);
+            lblTitle.Size = new Size(1008, 77);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "Проверка контрагента по ИНН";
+            // 
+            // lblInnLabel
+            // 
             lblInnLabel.AutoSize = true;
-            lblInnLabel.Font     = new Font("Arial", 8.25F);
-            lblInnLabel.Location = new Point(20, 58);
-            lblInnLabel.Name     = "lblInnLabel";
-            lblInnLabel.Text     = "ИНН контрагента:";
-
-            // ── txtInn ────────────────────────────────────────────────────────────
-            txtInn.BorderStyle      = BorderStyle.FixedSingle;
-            txtInn.Font             = new Font("Arial", 8.25F);
-            txtInn.Location         = new Point(20, 78);
-            txtInn.MaxLength        = 12;
-            txtInn.Name             = "txtInn";
-            txtInn.PlaceholderText  = "10 или 12 цифр";
-            txtInn.Size             = new Size(250, 23);
-            txtInn.TabIndex         = 0;
-            txtInn.KeyPress        += TxtInn_KeyPress;
-            txtInn.KeyDown         += TxtInn_KeyDown;
-
-            // ── btnCheck ──────────────────────────────────────────────────────────
+            lblInnLabel.Font = new Font("Arial", 8.25F);
+            lblInnLabel.Location = new Point(32, 93);
+            lblInnLabel.Margin = new Padding(5, 0, 5, 0);
+            lblInnLabel.Name = "lblInnLabel";
+            lblInnLabel.Size = new Size(193, 25);
+            lblInnLabel.TabIndex = 1;
+            lblInnLabel.Text = "ИНН контрагента:";
+            // 
+            // txtInn
+            // 
+            txtInn.BorderStyle = BorderStyle.FixedSingle;
+            txtInn.Font = new Font("Arial", 8.25F);
+            txtInn.Location = new Point(32, 125);
+            txtInn.Margin = new Padding(5, 5, 5, 5);
+            txtInn.MaxLength = 12;
+            txtInn.Name = "txtInn";
+            txtInn.PlaceholderText = "10 или 12 цифр";
+            txtInn.Size = new Size(405, 33);
+            txtInn.TabIndex = 0;
+            txtInn.KeyDown += TxtInn_KeyDown;
+            txtInn.KeyPress += TxtInn_KeyPress;
+            // 
+            // btnCheck
+            // 
             btnCheck.FlatStyle = FlatStyle.System;
-            btnCheck.Font      = new Font("Arial", 8.25F);
-            btnCheck.Location  = new Point(280, 76);
-            btnCheck.Name      = "btnCheck";
-            btnCheck.Size      = new Size(140, 27);
-            btnCheck.TabIndex  = 1;
-            btnCheck.Text      = "Проверить по API";
+            btnCheck.Font = new Font("Arial", 8.25F);
+            btnCheck.Location = new Point(455, 122);
+            btnCheck.Margin = new Padding(5, 5, 5, 5);
+            btnCheck.Name = "btnCheck";
+            btnCheck.Size = new Size(158, 43);
+            btnCheck.TabIndex = 1;
+            btnCheck.Text = "Проверить";
             btnCheck.UseVisualStyleBackColor = true;
-            btnCheck.Click    += BtnCheck_Click;
-
-            // ── lblHint ───────────────────────────────────────────────────────────
-            lblHint.AutoSize  = true;
-            lblHint.Font      = new Font("Arial", 7.5F, FontStyle.Italic);
+            btnCheck.Click += BtnCheck_Click;
+            // 
+            // lblHint
+            // 
+            lblHint.AutoSize = true;
+            lblHint.Font = new Font("Arial", 7.5F, FontStyle.Italic);
             lblHint.ForeColor = Color.Gray;
-            lblHint.Location  = new Point(20, 108);
-            lblHint.Name      = "lblHint";
-            lblHint.Text      = "Введите ИНН и нажмите «Проверить по API» (или Enter)";
-
-            // ── pnlResults ────────────────────────────────────────────────────────
-            pnlResults.Anchor   = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pnlResults.Location = new Point(0, 130);
-            pnlResults.Name     = "pnlResults";
-            pnlResults.Padding  = new Padding(12, 4, 12, 4);
-            pnlResults.Size     = new Size(620, 345);
-            pnlResults.Visible  = false;
-            pnlResults.Controls.AddRange(new Control[]
-            {
-                lblCompanyName, lblInnKppOgrn, lblAddress, lblDirector,
-                lblChecksTitle,
-                chkTaxDebtor, lblTaxDebtorNote,
-                chkBankrupt, lblBankruptNote,
-                chkDisqualified, lblDisqualNote,
-                lblStatusLabel, txtStatus
-            });
-
-            // Реквизиты
-            lblCompanyName.AutoSize    = true;
-            lblCompanyName.Font        = new Font("Arial", 9.75F, FontStyle.Bold);
-            lblCompanyName.Location    = new Point(20, 6);
-            lblCompanyName.MaximumSize = new Size(580, 0);
-            lblCompanyName.Name        = "lblCompanyName";
-            lblCompanyName.Text        = "—";
-
-            lblInnKppOgrn.AutoSize  = true;
-            lblInnKppOgrn.Font      = new Font("Arial", 7.8F);
+            lblHint.Location = new Point(32, 173);
+            lblHint.Margin = new Padding(5, 0, 5, 0);
+            lblHint.Name = "lblHint";
+            lblHint.Size = new Size(496, 24);
+            lblHint.TabIndex = 2;
+            lblHint.Text = "Введите ИНН и нажмите «Проверить» (или Enter)";
+            // 
+            // pnlResults
+            // 
+            pnlResults.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pnlResults.Controls.Add(lblCompanyName);
+            pnlResults.Controls.Add(lblInnKppOgrn);
+            pnlResults.Controls.Add(lblAddress);
+            pnlResults.Controls.Add(lblDirector);
+            pnlResults.Controls.Add(lblChecksTitle);
+            pnlResults.Controls.Add(chkTaxDebtor);
+            pnlResults.Controls.Add(lblTaxDebtorNote);
+            pnlResults.Controls.Add(chkBankrupt);
+            pnlResults.Controls.Add(lblBankruptNote);
+            pnlResults.Controls.Add(chkDisqualified);
+            pnlResults.Controls.Add(lblDisqualNote);
+            pnlResults.Controls.Add(lblStatusLabel);
+            pnlResults.Controls.Add(txtStatus);
+            pnlResults.Location = new Point(0, 208);
+            pnlResults.Margin = new Padding(5, 5, 5, 5);
+            pnlResults.Name = "pnlResults";
+            pnlResults.Padding = new Padding(20, 6, 20, 6);
+            pnlResults.Size = new Size(1008, 552);
+            pnlResults.TabIndex = 3;
+            pnlResults.Visible = false;
+            // 
+            // lblCompanyName
+            // 
+            lblCompanyName.AutoSize = true;
+            lblCompanyName.Font = new Font("Arial", 9.75F, FontStyle.Bold);
+            lblCompanyName.Location = new Point(32, 10);
+            lblCompanyName.Margin = new Padding(5, 0, 5, 0);
+            lblCompanyName.MaximumSize = new Size(942, 0);
+            lblCompanyName.Name = "lblCompanyName";
+            lblCompanyName.Size = new Size(39, 30);
+            lblCompanyName.TabIndex = 0;
+            lblCompanyName.Text = "—";
+            // 
+            // lblInnKppOgrn
+            // 
+            lblInnKppOgrn.AutoSize = true;
+            lblInnKppOgrn.Font = new Font("Arial", 7.8F);
             lblInnKppOgrn.ForeColor = Color.DimGray;
-            lblInnKppOgrn.Location  = new Point(20, 32);
-            lblInnKppOgrn.Name      = "lblInnKppOgrn";
-            lblInnKppOgrn.Text      = "ИНН — / КПП — / ОГРН —";
-
-            lblAddress.AutoSize    = true;
-            lblAddress.Font        = new Font("Arial", 7.5F);
-            lblAddress.ForeColor   = Color.DimGray;
-            lblAddress.Location    = new Point(20, 52);
-            lblAddress.MaximumSize = new Size(580, 0);
-            lblAddress.Name        = "lblAddress";
-            lblAddress.Text        = "";
-
-            lblDirector.AutoSize  = true;
-            lblDirector.Font      = new Font("Arial", 7.5F);
+            lblInnKppOgrn.Location = new Point(32, 51);
+            lblInnKppOgrn.Margin = new Padding(5, 0, 5, 0);
+            lblInnKppOgrn.Name = "lblInnKppOgrn";
+            lblInnKppOgrn.Size = new Size(265, 24);
+            lblInnKppOgrn.TabIndex = 1;
+            lblInnKppOgrn.Text = "ИНН — / КПП — / ОГРН —";
+            // 
+            // lblAddress
+            // 
+            lblAddress.AutoSize = true;
+            lblAddress.Font = new Font("Arial", 7.5F);
+            lblAddress.ForeColor = Color.DimGray;
+            lblAddress.Location = new Point(32, 83);
+            lblAddress.Margin = new Padding(5, 0, 5, 0);
+            lblAddress.MaximumSize = new Size(942, 0);
+            lblAddress.Name = "lblAddress";
+            lblAddress.Size = new Size(0, 23);
+            lblAddress.TabIndex = 2;
+            // 
+            // lblDirector
+            // 
+            lblDirector.AutoSize = true;
+            lblDirector.Font = new Font("Arial", 7.5F);
             lblDirector.ForeColor = Color.DimGray;
-            lblDirector.Location  = new Point(20, 68);
-            lblDirector.Name      = "lblDirector";
-            lblDirector.Text      = "";
-
-            // Результаты проверок
-            lblChecksTitle.AutoSize  = true;
-            lblChecksTitle.Font      = new Font("Arial", 8.25F, FontStyle.Bold);
-            lblChecksTitle.Location  = new Point(20, 92);
-            lblChecksTitle.Name      = "lblChecksTitle";
-            lblChecksTitle.Text      = "Результаты проверок:";
-
-            chkTaxDebtor.AutoSize  = true;
-            chkTaxDebtor.Enabled   = false;
-            chkTaxDebtor.Font      = new Font("Arial", 8.25F);
-            chkTaxDebtor.Location  = new Point(20, 112);
-            chkTaxDebtor.Name      = "chkTaxDebtor";
-            chkTaxDebtor.Text      = "Не налоговый должник";
-
-            lblTaxDebtorNote.AutoSize  = true;
-            lblTaxDebtorNote.Font      = new Font("Arial", 7.5F, FontStyle.Italic);
+            lblDirector.Location = new Point(32, 109);
+            lblDirector.Margin = new Padding(5, 0, 5, 0);
+            lblDirector.Name = "lblDirector";
+            lblDirector.Size = new Size(0, 23);
+            lblDirector.TabIndex = 3;
+            // 
+            // lblChecksTitle
+            // 
+            lblChecksTitle.AutoSize = true;
+            lblChecksTitle.Font = new Font("Arial", 8.25F, FontStyle.Bold);
+            lblChecksTitle.Location = new Point(32, 147);
+            lblChecksTitle.Margin = new Padding(5, 0, 5, 0);
+            lblChecksTitle.Name = "lblChecksTitle";
+            lblChecksTitle.Size = new Size(251, 26);
+            lblChecksTitle.TabIndex = 4;
+            lblChecksTitle.Text = "Результаты проверок:";
+            // 
+            // chkTaxDebtor
+            // 
+            chkTaxDebtor.AutoSize = true;
+            chkTaxDebtor.Enabled = false;
+            chkTaxDebtor.Font = new Font("Arial", 8.25F);
+            chkTaxDebtor.Location = new Point(32, 179);
+            chkTaxDebtor.Margin = new Padding(5, 5, 5, 5);
+            chkTaxDebtor.Name = "chkTaxDebtor";
+            chkTaxDebtor.Size = new Size(282, 29);
+            chkTaxDebtor.TabIndex = 5;
+            chkTaxDebtor.Text = "Не налоговый должник";
+            // 
+            // lblTaxDebtorNote
+            // 
+            lblTaxDebtorNote.AutoSize = true;
+            lblTaxDebtorNote.Font = new Font("Arial", 7.5F, FontStyle.Italic);
             lblTaxDebtorNote.ForeColor = Color.Gray;
-            lblTaxDebtorNote.Location  = new Point(320, 115);
-            lblTaxDebtorNote.Name      = "lblTaxDebtorNote";
-            lblTaxDebtorNote.Text      = "";
-
-            chkBankrupt.AutoSize  = true;
-            chkBankrupt.Enabled   = false;
-            chkBankrupt.Font      = new Font("Arial", 8.25F);
-            chkBankrupt.Location  = new Point(20, 136);
-            chkBankrupt.Name      = "chkBankrupt";
-            chkBankrupt.Text      = "Не в реестре банкротов";
-
-            lblBankruptNote.AutoSize  = true;
-            lblBankruptNote.Font      = new Font("Arial", 7.5F, FontStyle.Italic);
+            lblTaxDebtorNote.Location = new Point(520, 184);
+            lblTaxDebtorNote.Margin = new Padding(5, 0, 5, 0);
+            lblTaxDebtorNote.Name = "lblTaxDebtorNote";
+            lblTaxDebtorNote.Size = new Size(0, 24);
+            lblTaxDebtorNote.TabIndex = 6;
+            // 
+            // chkBankrupt
+            // 
+            chkBankrupt.AutoSize = true;
+            chkBankrupt.Enabled = false;
+            chkBankrupt.Font = new Font("Arial", 8.25F);
+            chkBankrupt.Location = new Point(32, 218);
+            chkBankrupt.Margin = new Padding(5, 5, 5, 5);
+            chkBankrupt.Name = "chkBankrupt";
+            chkBankrupt.Size = new Size(290, 29);
+            chkBankrupt.TabIndex = 7;
+            chkBankrupt.Text = "Не в реестре банкротов";
+            // 
+            // lblBankruptNote
+            // 
+            lblBankruptNote.AutoSize = true;
+            lblBankruptNote.Font = new Font("Arial", 7.5F, FontStyle.Italic);
             lblBankruptNote.ForeColor = Color.Gray;
-            lblBankruptNote.Location  = new Point(320, 139);
-            lblBankruptNote.Name      = "lblBankruptNote";
-            lblBankruptNote.Text      = "";
-
-            chkDisqualified.AutoSize  = true;
-            chkDisqualified.Enabled   = false;
-            chkDisqualified.Font      = new Font("Arial", 8.25F);
-            chkDisqualified.Location  = new Point(20, 160);
-            chkDisqualified.Name      = "chkDisqualified";
-            chkDisqualified.Text      = "Все директора не дисквалифицированы";
-
-            lblDisqualNote.AutoSize  = true;
-            lblDisqualNote.Font      = new Font("Arial", 7.5F, FontStyle.Italic);
+            lblBankruptNote.Location = new Point(520, 222);
+            lblBankruptNote.Margin = new Padding(5, 0, 5, 0);
+            lblBankruptNote.Name = "lblBankruptNote";
+            lblBankruptNote.Size = new Size(0, 24);
+            lblBankruptNote.TabIndex = 8;
+            // 
+            // chkDisqualified
+            // 
+            chkDisqualified.AutoSize = true;
+            chkDisqualified.Enabled = false;
+            chkDisqualified.Font = new Font("Arial", 8.25F);
+            chkDisqualified.Location = new Point(32, 256);
+            chkDisqualified.Margin = new Padding(5, 5, 5, 5);
+            chkDisqualified.Name = "chkDisqualified";
+            chkDisqualified.Size = new Size(458, 29);
+            chkDisqualified.TabIndex = 9;
+            chkDisqualified.Text = "Все директора не дисквалифицированы";
+            // 
+            // lblDisqualNote
+            // 
+            lblDisqualNote.AutoSize = true;
+            lblDisqualNote.Font = new Font("Arial", 7.5F, FontStyle.Italic);
             lblDisqualNote.ForeColor = Color.Gray;
-            lblDisqualNote.Location  = new Point(320, 163);
-            lblDisqualNote.Name      = "lblDisqualNote";
-            lblDisqualNote.Text      = "";
-
-            // Статус
+            lblDisqualNote.Location = new Point(520, 261);
+            lblDisqualNote.Margin = new Padding(5, 0, 5, 0);
+            lblDisqualNote.Name = "lblDisqualNote";
+            lblDisqualNote.Size = new Size(0, 24);
+            lblDisqualNote.TabIndex = 10;
+            // 
+            // lblStatusLabel
+            // 
             lblStatusLabel.AutoSize = true;
-            lblStatusLabel.Font     = new Font("Arial", 8.25F, FontStyle.Bold);
-            lblStatusLabel.Location = new Point(20, 196);
-            lblStatusLabel.Name     = "lblStatusLabel";
-            lblStatusLabel.Text     = "Актуальный статус компании:";
-
+            lblStatusLabel.Font = new Font("Arial", 8.25F, FontStyle.Bold);
+            lblStatusLabel.Location = new Point(32, 314);
+            lblStatusLabel.Margin = new Padding(5, 0, 5, 0);
+            lblStatusLabel.Name = "lblStatusLabel";
+            lblStatusLabel.Size = new Size(335, 26);
+            lblStatusLabel.TabIndex = 11;
+            lblStatusLabel.Text = "Актуальный статус компании:";
+            // 
+            // txtStatus
+            // 
             txtStatus.BorderStyle = BorderStyle.FixedSingle;
-            txtStatus.Font        = new Font("Arial", 8.25F);
-            txtStatus.Location    = new Point(20, 214);
-            txtStatus.Name        = "txtStatus";
-            txtStatus.ReadOnly    = true;
-            txtStatus.Size        = new Size(580, 23);
-            txtStatus.TabStop     = false;
-
-            // ── pnlBottom ─────────────────────────────────────────────────────────
-            pnlBottom.Dock    = DockStyle.Bottom;
-            pnlBottom.Height  = 55;
-            pnlBottom.Name    = "pnlBottom";
-            pnlBottom.Padding = new Padding(10, 8, 10, 8);
-            pnlBottom.Controls.AddRange(new Control[] { btnClose, btnCheckAgain });
-
-            btnClose.Anchor   = AnchorStyles.Bottom | AnchorStyles.Right;
+            txtStatus.Font = new Font("Arial", 8.25F);
+            txtStatus.Location = new Point(32, 342);
+            txtStatus.Margin = new Padding(5, 5, 5, 5);
+            txtStatus.Name = "txtStatus";
+            txtStatus.ReadOnly = true;
+            txtStatus.Size = new Size(941, 33);
+            txtStatus.TabIndex = 12;
+            txtStatus.TabStop = false;
+            // 
+            // pnlBottom
+            // 
+            pnlBottom.Controls.Add(btnClose);
+            pnlBottom.Controls.Add(btnCheckAgain);
+            pnlBottom.Dock = DockStyle.Bottom;
+            pnlBottom.Location = new Point(0, 760);
+            pnlBottom.Margin = new Padding(5, 5, 5, 5);
+            pnlBottom.Name = "pnlBottom";
+            pnlBottom.Padding = new Padding(16, 13, 16, 13);
+            pnlBottom.Size = new Size(1008, 88);
+            pnlBottom.TabIndex = 4;
+            // 
+            // btnClose
+            // 
+            btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnClose.FlatStyle = FlatStyle.System;
-            btnClose.Font     = new Font("Arial", 8.25F);
-            btnClose.Location = new Point(480, 12);
-            btnClose.Name     = "btnClose";
-            btnClose.Size     = new Size(120, 32);
+            btnClose.Font = new Font("Arial", 8.25F);
+            btnClose.Location = new Point(1463, 19);
+            btnClose.Margin = new Padding(5, 5, 5, 5);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new Size(195, 51);
             btnClose.TabIndex = 10;
-            btnClose.Text     = "Закрыть";
+            btnClose.Text = "Закрыть";
             btnClose.UseVisualStyleBackColor = true;
-            btnClose.Click   += btnClose_Click;
-
-            btnCheckAgain.Anchor   = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnClose.Click += btnClose_Click;
+            // 
+            // btnCheckAgain
+            // 
+            btnCheckAgain.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCheckAgain.FlatStyle = FlatStyle.System;
-            btnCheckAgain.Font     = new Font("Arial", 8.25F);
-            btnCheckAgain.Location = new Point(350, 12);
-            btnCheckAgain.Name     = "btnCheckAgain";
-            btnCheckAgain.Size     = new Size(120, 32);
+            btnCheckAgain.Font = new Font("Arial", 8.25F);
+            btnCheckAgain.Location = new Point(1252, 19);
+            btnCheckAgain.Margin = new Padding(5, 5, 5, 5);
+            btnCheckAgain.Name = "btnCheckAgain";
+            btnCheckAgain.Size = new Size(195, 51);
             btnCheckAgain.TabIndex = 9;
-            btnCheckAgain.Text     = "Проверить";
+            btnCheckAgain.Text = "Проверить";
             btnCheckAgain.UseVisualStyleBackColor = true;
-            btnCheckAgain.Click   += BtnCheck_Click;
-
-            // ── CounterpartyForm ──────────────────────────────────────────────────
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode       = AutoScaleMode.Font;
-            ClientSize          = new Size(620, 530);
-            FormBorderStyle     = FormBorderStyle.FixedDialog;
-            MaximizeBox         = false;
-            MinimizeBox         = false;
-            Name                = "CounterpartyForm";
-            StartPosition       = FormStartPosition.CenterParent;
-            Text                = "Складской учёт — Проверка контрагента по ИНН";
-
+            btnCheckAgain.Click += BtnCheck_Click;
+            // 
+            // CounterpartyForm
+            // 
+            AutoScaleDimensions = new SizeF(13F, 32F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1008, 848);
             Controls.Add(lblTitle);
             Controls.Add(lblInnLabel);
             Controls.Add(txtInn);
@@ -245,7 +328,13 @@ namespace WinFormsApp1
             Controls.Add(lblHint);
             Controls.Add(pnlResults);
             Controls.Add(pnlBottom);
-
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            Margin = new Padding(5, 5, 5, 5);
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "CounterpartyForm";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Складской учёт — Проверка контрагента по ИНН";
             pnlResults.ResumeLayout(false);
             pnlResults.PerformLayout();
             pnlBottom.ResumeLayout(false);
