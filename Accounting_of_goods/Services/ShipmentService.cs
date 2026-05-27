@@ -37,9 +37,9 @@
             return new { product.Article, product.CurrentStock, Price = lastPrice };
         }
 
-        public void ProcessShipment(int userId, string recipient, List<ShipmentItemDto> items)
+        public void ProcessShipment(int userId, string recipient, string region, List<ShipmentItemDto> items)
         {
-            _logger.LogInformation("РќР°С‡Р°Р»Рѕ РѕР±СЂР°Р±РѕС‚РєРё РѕС‚РіСЂСѓР·РєРё РѕС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ {UserId} РїРѕР»СѓС‡Р°С‚РµР»СЋ {Recipient}. РљРѕР»РёС‡РµСЃС‚РІРѕ РїРѕР·РёС†РёР№: {Count}", userId, recipient, items.Count);
+            _logger.LogInformation("Начало обработки отгрузки от пользователя {UserId} получателю {Recipient}. Регион: {Region}. Количество позиций: {Count}", userId, recipient, region, items.Count);
 
             using (var transaction = _db.Database.BeginTransaction())
             {
@@ -52,7 +52,7 @@
                         var product = _db.Products.FirstOrDefault(p => p.Article == item.Article);
                         if (product == null)
                         {
-                            _logger.LogWarning("РўРѕРІР°СЂ СЃ Р°СЂС‚РёРєСѓР»РѕРј {Article} РЅРµ РЅР°Р№РґРµРЅ РїСЂРё РїРѕРїС‹С‚РєРµ РѕС‚РіСЂСѓР·РєРё", item.Article);
+                            _logger.LogWarning("Товар с артикулом {Article} не найден при попытке отгрузки", item.Article);
                             continue;
                         }
 
@@ -63,6 +63,7 @@
                             Quantity = item.Quantity,
                             SellingPriceAtShipment = item.Price,
                             Recipient = recipient,
+                            Region = region,
                             ShipmentDate = DateTime.UtcNow,
                             TotalAmount = item.Quantity * item.Price,
                             CurrencyAtShipment = CurrencyConverter.CurrentCurrency,
@@ -72,7 +73,7 @@
                         _db.Shipments.Add(shipment);
                         _db.SaveChanges();
 
-                        _logger.LogInformation("РЎРѕР·РґР°РЅР° РѕС‚РіСЂСѓР·РєР° ID {ShipmentId} РґР»СЏ С‚РѕРІР°СЂР° {Article}, РєРѕР»РёС‡РµСЃС‚РІРѕ: {Quantity}", shipment.Id, product.Article, item.Quantity);
+                        _logger.LogInformation("Создана отгрузка ID {ShipmentId} для товара {Article}, количество: {Quantity}", shipment.Id, product.Article, item.Quantity);
 
                         int remainingToShip = item.Quantity;
 
@@ -104,11 +105,11 @@
 
                     _db.SaveChanges();
                     transaction.Commit();
-                    _logger.LogInformation("РўСЂР°РЅР·Р°РєС†РёСЏ РѕС‚РіСЂСѓР·РєРё РґР»СЏ РїРѕР»СѓС‡Р°С‚РµР»СЏ {Recipient} СѓСЃРїРµС€РЅРѕ Р·Р°РІРµСЂС€РµРЅР°", recipient);
+                    _logger.LogInformation("Транзакция отгрузки для получателя {Recipient} успешно завершена", recipient);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРё РѕС„РѕСЂРјР»РµРЅРёРё РѕС‚РіСЂСѓР·РєРё РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ {UserId} РїРѕР»СѓС‡Р°С‚РµР»СЋ {Recipient}", userId, recipient);
+                    _logger.LogError(ex, "Ошибка при оформлении отгрузки для пользователя {UserId} получателю {Recipient}", userId, recipient);
                     transaction.Rollback();
                     throw;
                 }

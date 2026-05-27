@@ -1,31 +1,66 @@
+using System;
+using System.Windows.Forms;
+using WinFormsApp1.Interfaces;
+
 namespace WinFormsApp1
 {
     public partial class CounterpartyForm : Form
     {
         private readonly ICounterpartyService _counterpartyService;
 
+        public string FinalStatus { get; private set; }
+        public new string CompanyName => txtCompanyName.Text.Trim();
+
         public CounterpartyForm()
         {
             InitializeComponent();
+            this.Load += CounterpartyForm_Load;
         }
 
         public CounterpartyForm(ICounterpartyService counterpartyService) : this()
         {
             _counterpartyService = counterpartyService;
         }
-        public void ShowResult(CounterpartyInfo info)
+
+        private void CounterpartyForm_Load(object sender, EventArgs e)
         {
-            DisplayResult(info);
+            chkTaxDebtor.Text = "Налоговый должник";
+            chkBankrupt.Text = "Процедура банкротства";
+            chkDisqualified.Text = "Дисквалифицированные директора";
+
+            lblTaxDebtorNote.Visible = false;
+            lblBankruptNote.Visible = false;
+            lblDisqualNote.Visible = false;
+            lblAddress.Visible = false;
+            lblDirector.Visible = false;
+
+            chkTaxDebtor.CheckedChanged += (s, ev) => UpdateVerificationStatus();
+            chkBankrupt.CheckedChanged += (s, ev) => UpdateVerificationStatus();
+            chkDisqualified.CheckedChanged += (s, ev) => UpdateVerificationStatus();
+            txtCompanyName.TextChanged += (s, ev) => UpdateVerificationStatus();
+
+            UpdateVerificationStatus();
         }
+
         public void SetInn(string inn)
         {
             txtInn.Text = inn ?? "";
+            if (!string.IsNullOrEmpty(inn))
+            {
+                BtnCheck_Click(this, EventArgs.Empty);
+            }
+            else
+            {
+                pnlResults.Visible = false;
+            }
         }
+
         private void TxtInn_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
                 e.Handled = true;
         }
+
         private void TxtInn_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -34,11 +69,8 @@ namespace WinFormsApp1
                 BtnCheck_Click(sender, e);
             }
         }
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-        private async void BtnCheck_Click(object sender, EventArgs e)
+
+        private void BtnCheck_Click(object sender, EventArgs e)
         {
             string inn = txtInn.Text.Trim();
 
@@ -50,73 +82,62 @@ namespace WinFormsApp1
                 return;
             }
 
-            SetLoading(true);
-            pnlResults.Visible = false;
-            lblHint.Text = "Выполняется запрос…";
-            try
-            {
-                var info = await _counterpartyService.CheckByInnAsync(inn);
-                DisplayResult(info);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка:\n{ex.Message}", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lblHint.Text = "Ошибка при проверке.";
-            }
-            finally
-            {
-                SetLoading(false);
-            }
-        }
-        private void DisplayResult(CounterpartyInfo info)
-        {
-            lblCompanyName.Text = info.FullName ?? info.ShortName ?? $"ИНН {info.Inn}";
-            lblInnKppOgrn.Text  = $"ИНН: {info.Inn}  КПП: {info.Kpp ?? "—"}  ОГРН: {info.Ogrn ?? "—"}";
-            lblAddress.Text     = string.IsNullOrEmpty(info.Address) ? "" : $"Адрес: {info.Address}";
-            lblDirector.Text    = string.IsNullOrEmpty(info.DirectorName) ? "" : $"Руководитель: {info.DirectorName}";
+            lblInnKppOgrn.Text = $"ИНН: {inn}      Дата проверки: {DateTime.Now:dd.MM.yyyy HH:mm}";
+            chkTaxDebtor.Checked = false;
+            chkBankrupt.Checked = false;
+            chkDisqualified.Checked = false;
+            txtCompanyName.Clear();
 
-            txtStatus.Text = info.StatusDescription ?? "—";
-
-            SetCheckResult(chkTaxDebtor, lblTaxDebtorNote,
-                info.IsTaxDebtor, invert: true, info.TaxDebtorCheckError);
-            SetCheckResult(chkBankrupt, lblBankruptNote,
-                info.IsBankrupt, invert: true, info.BankruptCheckError);
-            SetCheckResult(chkDisqualified, lblDisqualNote,
-                info.HasDisqualifiedDirectors, invert: true, info.DisqualifiedCheckError);
-
-            lblHint.Text = $"Проверка завершена · {DateTime.Now:HH:mm:ss}";
             pnlResults.Visible = true;
+            lblHint.Text = "";
+            txtCompanyName.Focus();
+
+            UpdateVerificationStatus();
         }
-        private static void SetCheckResult(CheckBox chk, Label note,
-            bool? value, bool invert, string error)
+
+        private void UpdateVerificationStatus()
         {
-            if (!string.IsNullOrEmpty(error))
+            if (string.IsNullOrWhiteSpace(txtCompanyName.Text))
             {
-                chk.Checked   = false;
-                chk.ForeColor = SystemColors.ControlText;
-                note.Text     = $"({error})";
+                txtStatus.Text = "";
+                btnAllow.Enabled = false;
+                btnForbid.Enabled = false;
                 return;
             }
-            if (value == null)
+
+            bool hasRisk = chkTaxDebtor.Checked || chkBankrupt.Checked || chkDisqualified.Checked;
+            if (hasRisk)
             {
-                chk.Checked   = false;
-                chk.ForeColor = Color.Gray;
-                note.Text     = "(не проверено)";
-                return;
+                txtStatus.Text = "Запрещен";
+                btnAllow.Enabled = false;
+                btnForbid.Enabled = true;
             }
-            bool good = invert ? value == false : value == true;
-            chk.Checked   = good;
-            chk.ForeColor = good ? Color.DarkGreen : Color.DarkRed;
-            note.Text     = "";
+            else
+            {
+                txtStatus.Text = "Разрешен";
+                btnAllow.Enabled = true;
+                btnForbid.Enabled = false;
             }
-        private void SetLoading(bool loading)
+        }
+
+        private void btnAllow_Click(object sender, EventArgs e)
         {
-            btnCheck.Enabled      = !loading;
-            btnCheckAgain.Enabled = !loading;
-            txtInn.Enabled        = !loading;
-            btnCheck.Text      = loading ? "Загрузка…" : "Проверить по API";
-            btnCheckAgain.Text = loading ? "Загрузка…" : "Проверить";
+            FinalStatus = "Разрешен";
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+
+        private void btnForbid_Click(object sender, EventArgs e)
+        {
+            FinalStatus = "Запрещен";
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
         }
     }
 }

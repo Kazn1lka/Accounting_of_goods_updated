@@ -1,16 +1,16 @@
-namespace WinFormsApp1.Models
+﻿namespace WinFormsApp1.Models
 {
     public class Product
     {
         public int Id { get; set; }
-        public string Article { get; set; }       // редактируется
-        public string Brand { get; set; }         // редактируется
-        public string Name { get; set; }          // редактируется
-        public string Size { get; set; }          // редактируется
+        public string Article { get; set; }
+        public string Brand { get; set; }
+        public string Name { get; set; }
+        public string Size { get; set; }
         public decimal PurchasePrice { get; set; }
-        public int CurrentStock { get; set; }     // изменяется при отгрузке/списании
-        public decimal SellingPrice { get; set; } // редактируется
-        public DateTime? ExpiryDate { get; set; } // редактируется
+        public int CurrentStock { get; set; }
+        public decimal SellingPrice { get; set; }
+        public DateTime? ExpiryDate { get; set; }
 
         public int CategoryId { get; set; }
         public Category Category { get; set; }

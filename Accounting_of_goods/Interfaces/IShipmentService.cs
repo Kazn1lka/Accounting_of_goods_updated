@@ -5,7 +5,7 @@
         List<string> GetProductNames();
         List<string> GetSizesForProduct(string productName);
         object GetProductDetails(string productName, string size);
-        void ProcessShipment(int userId, string recipient, List<ShipmentItemDto> items);
+        void ProcessShipment(int userId, string recipient, string region, List<ShipmentItemDto> items);
     }
 
     public class ShipmentItemDto

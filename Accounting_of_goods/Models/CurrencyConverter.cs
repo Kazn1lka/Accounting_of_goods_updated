@@ -27,7 +27,6 @@
 
             try
             {
-             
                 string url = "https://open.er-api.com/v6/latest/RUB";
                 string response = await client.GetStringAsync(url);
 
@@ -44,8 +43,7 @@
             }
             catch (Exception ex)
             {
-              
-                System.Windows.Forms.MessageBox.Show($"РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё РєСѓСЂСЃР°: {ex.Message}", "РћС€РёР±РєР°",
+                System.Windows.Forms.MessageBox.Show($"Ошибка загрузки курса: {ex.Message}", "Ошибка",
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 CurrentCurrency = "RUB";
                 CurrentRate = 1m;

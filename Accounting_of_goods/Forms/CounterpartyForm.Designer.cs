@@ -20,7 +20,8 @@ namespace WinFormsApp1
             btnCheck = new Button();
             lblHint = new Label();
             pnlResults = new Panel();
-            lblCompanyName = new Label();
+            lblCompanyNameLabel = new Label();
+            txtCompanyName = new TextBox();
             lblInnKppOgrn = new Label();
             lblAddress = new Label();
             lblDirector = new Label();
@@ -34,8 +35,9 @@ namespace WinFormsApp1
             lblStatusLabel = new Label();
             txtStatus = new TextBox();
             pnlBottom = new Panel();
-            btnClose = new Button();
-            btnCheckAgain = new Button();
+            btnCancel = new Button();
+            btnAllow = new Button();
+            btnForbid = new Button();
             pnlResults.SuspendLayout();
             pnlBottom.SuspendLayout();
             SuspendLayout();
@@ -48,7 +50,7 @@ namespace WinFormsApp1
             lblTitle.Margin = new Padding(5, 0, 5, 0);
             lblTitle.Name = "lblTitle";
             lblTitle.Padding = new Padding(16, 16, 0, 0);
-            lblTitle.Size = new Size(1008, 77);
+            lblTitle.Size = new Size(1070, 77);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "Проверка контрагента по ИНН";
             // 
@@ -68,7 +70,7 @@ namespace WinFormsApp1
             txtInn.BorderStyle = BorderStyle.FixedSingle;
             txtInn.Font = new Font("Arial", 8.25F);
             txtInn.Location = new Point(32, 125);
-            txtInn.Margin = new Padding(5, 5, 5, 5);
+            txtInn.Margin = new Padding(5);
             txtInn.MaxLength = 12;
             txtInn.Name = "txtInn";
             txtInn.PlaceholderText = "10 или 12 цифр";
@@ -82,7 +84,7 @@ namespace WinFormsApp1
             btnCheck.FlatStyle = FlatStyle.System;
             btnCheck.Font = new Font("Arial", 8.25F);
             btnCheck.Location = new Point(455, 122);
-            btnCheck.Margin = new Padding(5, 5, 5, 5);
+            btnCheck.Margin = new Padding(5);
             btnCheck.Name = "btnCheck";
             btnCheck.Size = new Size(158, 43);
             btnCheck.TabIndex = 1;
@@ -105,7 +107,8 @@ namespace WinFormsApp1
             // pnlResults
             // 
             pnlResults.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pnlResults.Controls.Add(lblCompanyName);
+            pnlResults.Controls.Add(lblCompanyNameLabel);
+            pnlResults.Controls.Add(txtCompanyName);
             pnlResults.Controls.Add(lblInnKppOgrn);
             pnlResults.Controls.Add(lblAddress);
             pnlResults.Controls.Add(lblDirector);
@@ -119,24 +122,32 @@ namespace WinFormsApp1
             pnlResults.Controls.Add(lblStatusLabel);
             pnlResults.Controls.Add(txtStatus);
             pnlResults.Location = new Point(0, 208);
-            pnlResults.Margin = new Padding(5, 5, 5, 5);
+            pnlResults.Margin = new Padding(5);
             pnlResults.Name = "pnlResults";
             pnlResults.Padding = new Padding(20, 6, 20, 6);
-            pnlResults.Size = new Size(1008, 552);
+            pnlResults.Size = new Size(1070, 552);
             pnlResults.TabIndex = 3;
             pnlResults.Visible = false;
             // 
-            // lblCompanyName
+            // lblCompanyNameLabel
             // 
-            lblCompanyName.AutoSize = true;
-            lblCompanyName.Font = new Font("Arial", 9.75F, FontStyle.Bold);
-            lblCompanyName.Location = new Point(32, 10);
-            lblCompanyName.Margin = new Padding(5, 0, 5, 0);
-            lblCompanyName.MaximumSize = new Size(942, 0);
-            lblCompanyName.Name = "lblCompanyName";
-            lblCompanyName.Size = new Size(39, 30);
-            lblCompanyName.TabIndex = 0;
-            lblCompanyName.Text = "—";
+            lblCompanyNameLabel.AutoSize = true;
+            lblCompanyNameLabel.Font = new Font("Arial", 9.75F, FontStyle.Bold);
+            lblCompanyNameLabel.Location = new Point(32, 10);
+            lblCompanyNameLabel.Margin = new Padding(5, 0, 5, 0);
+            lblCompanyNameLabel.Name = "lblCompanyNameLabel";
+            lblCompanyNameLabel.Size = new Size(122, 24);
+            lblCompanyNameLabel.TabIndex = 0;
+            lblCompanyNameLabel.Text = "Контрагент:";
+            // 
+            // txtCompanyName
+            // 
+            txtCompanyName.BorderStyle = BorderStyle.FixedSingle;
+            txtCompanyName.Font = new Font("Arial", 9.75F);
+            txtCompanyName.Location = new Point(220, 8);
+            txtCompanyName.Name = "txtCompanyName";
+            txtCompanyName.Size = new Size(460, 33);
+            txtCompanyName.TabIndex = 0;
             // 
             // lblInnKppOgrn
             // 
@@ -187,10 +198,10 @@ namespace WinFormsApp1
             // chkTaxDebtor
             // 
             chkTaxDebtor.AutoSize = true;
-            chkTaxDebtor.Enabled = false;
+            chkTaxDebtor.Enabled = true;
             chkTaxDebtor.Font = new Font("Arial", 8.25F);
             chkTaxDebtor.Location = new Point(32, 179);
-            chkTaxDebtor.Margin = new Padding(5, 5, 5, 5);
+            chkTaxDebtor.Margin = new Padding(5);
             chkTaxDebtor.Name = "chkTaxDebtor";
             chkTaxDebtor.Size = new Size(282, 29);
             chkTaxDebtor.TabIndex = 5;
@@ -210,10 +221,10 @@ namespace WinFormsApp1
             // chkBankrupt
             // 
             chkBankrupt.AutoSize = true;
-            chkBankrupt.Enabled = false;
+            chkBankrupt.Enabled = true;
             chkBankrupt.Font = new Font("Arial", 8.25F);
             chkBankrupt.Location = new Point(32, 218);
-            chkBankrupt.Margin = new Padding(5, 5, 5, 5);
+            chkBankrupt.Margin = new Padding(5);
             chkBankrupt.Name = "chkBankrupt";
             chkBankrupt.Size = new Size(290, 29);
             chkBankrupt.TabIndex = 7;
@@ -233,10 +244,10 @@ namespace WinFormsApp1
             // chkDisqualified
             // 
             chkDisqualified.AutoSize = true;
-            chkDisqualified.Enabled = false;
+            chkDisqualified.Enabled = true;
             chkDisqualified.Font = new Font("Arial", 8.25F);
             chkDisqualified.Location = new Point(32, 256);
-            chkDisqualified.Margin = new Padding(5, 5, 5, 5);
+            chkDisqualified.Margin = new Padding(5);
             chkDisqualified.Name = "chkDisqualified";
             chkDisqualified.Size = new Size(458, 29);
             chkDisqualified.TabIndex = 9;
@@ -262,65 +273,81 @@ namespace WinFormsApp1
             lblStatusLabel.Name = "lblStatusLabel";
             lblStatusLabel.Size = new Size(335, 26);
             lblStatusLabel.TabIndex = 11;
-            lblStatusLabel.Text = "Актуальный статус компании:";
+            lblStatusLabel.Text = "Итоговый статус проверки:";
             // 
             // txtStatus
             // 
             txtStatus.BorderStyle = BorderStyle.FixedSingle;
             txtStatus.Font = new Font("Arial", 8.25F);
-            txtStatus.Location = new Point(32, 342);
-            txtStatus.Margin = new Padding(5, 5, 5, 5);
+            txtStatus.Location = new Point(380, 311);
+            txtStatus.Margin = new Padding(5);
             txtStatus.Name = "txtStatus";
             txtStatus.ReadOnly = true;
-            txtStatus.Size = new Size(941, 33);
+            txtStatus.Enabled = false;
+            txtStatus.Size = new Size(300, 33);
             txtStatus.TabIndex = 12;
             txtStatus.TabStop = false;
             // 
             // pnlBottom
             // 
-            pnlBottom.Controls.Add(btnClose);
-            pnlBottom.Controls.Add(btnCheckAgain);
+            pnlBottom.Controls.Add(btnCancel);
+            pnlBottom.Controls.Add(btnAllow);
+            pnlBottom.Controls.Add(btnForbid);
             pnlBottom.Dock = DockStyle.Bottom;
             pnlBottom.Location = new Point(0, 760);
-            pnlBottom.Margin = new Padding(5, 5, 5, 5);
+            pnlBottom.Margin = new Padding(5);
             pnlBottom.Name = "pnlBottom";
             pnlBottom.Padding = new Padding(16, 13, 16, 13);
-            pnlBottom.Size = new Size(1008, 88);
+            pnlBottom.Size = new Size(1070, 88);
             pnlBottom.TabIndex = 4;
             // 
-            // btnClose
+            // btnCancel
             // 
-            btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnClose.FlatStyle = FlatStyle.System;
-            btnClose.Font = new Font("Arial", 8.25F);
-            btnClose.Location = new Point(1463, 19);
-            btnClose.Margin = new Padding(5, 5, 5, 5);
-            btnClose.Name = "btnClose";
-            btnClose.Size = new Size(195, 51);
-            btnClose.TabIndex = 10;
-            btnClose.Text = "Закрыть";
-            btnClose.UseVisualStyleBackColor = true;
-            btnClose.Click += btnClose_Click;
+            btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnCancel.FlatStyle = FlatStyle.System;
+            btnCancel.Font = new Font("Arial", 8.25F);
+            btnCancel.Location = new Point(32, 19);
+            btnCancel.Margin = new Padding(5);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(195, 51);
+            btnCancel.TabIndex = 10;
+            btnCancel.Text = "Отмена";
+            btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += btnCancel_Click;
             // 
-            // btnCheckAgain
+            // btnAllow
             // 
-            btnCheckAgain.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCheckAgain.FlatStyle = FlatStyle.System;
-            btnCheckAgain.Font = new Font("Arial", 8.25F);
-            btnCheckAgain.Location = new Point(1252, 19);
-            btnCheckAgain.Margin = new Padding(5, 5, 5, 5);
-            btnCheckAgain.Name = "btnCheckAgain";
-            btnCheckAgain.Size = new Size(195, 51);
-            btnCheckAgain.TabIndex = 9;
-            btnCheckAgain.Text = "Проверить";
-            btnCheckAgain.UseVisualStyleBackColor = true;
-            btnCheckAgain.Click += BtnCheck_Click;
+            btnAllow.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnAllow.FlatStyle = FlatStyle.System;
+            btnAllow.Font = new Font("Arial", 8.25F);
+            btnAllow.Location = new Point(620, 19);
+            btnAllow.Margin = new Padding(5);
+            btnAllow.Name = "btnAllow";
+            btnAllow.Size = new Size(195, 51);
+            btnAllow.TabIndex = 9;
+            btnAllow.Text = "Разрешить";
+            btnAllow.UseVisualStyleBackColor = true;
+            btnAllow.Click += btnAllow_Click;
+            // 
+            // btnForbid
+            // 
+            btnForbid.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnForbid.FlatStyle = FlatStyle.System;
+            btnForbid.Font = new Font("Arial", 8.25F);
+            btnForbid.Location = new Point(840, 19);
+            btnForbid.Margin = new Padding(5);
+            btnForbid.Name = "btnForbid";
+            btnForbid.Size = new Size(195, 51);
+            btnForbid.TabIndex = 8;
+            btnForbid.Text = "Запретить";
+            btnForbid.UseVisualStyleBackColor = true;
+            btnForbid.Click += btnForbid_Click;
             // 
             // CounterpartyForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1008, 848);
+            ClientSize = new Size(1070, 848);
             Controls.Add(lblTitle);
             Controls.Add(lblInnLabel);
             Controls.Add(txtInn);
@@ -329,7 +356,7 @@ namespace WinFormsApp1
             Controls.Add(pnlResults);
             Controls.Add(pnlBottom);
             FormBorderStyle = FormBorderStyle.FixedDialog;
-            Margin = new Padding(5, 5, 5, 5);
+            Margin = new Padding(5);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "CounterpartyForm";
@@ -350,7 +377,8 @@ namespace WinFormsApp1
         private Button   btnCheck;
         private Label    lblHint;
         private Panel    pnlResults;
-        private Label    lblCompanyName;
+        private Label    lblCompanyNameLabel;
+        private TextBox  txtCompanyName;
         private Label    lblInnKppOgrn;
         private Label    lblAddress;
         private Label    lblDirector;
@@ -364,7 +392,8 @@ namespace WinFormsApp1
         private Label    lblStatusLabel;
         private TextBox  txtStatus;
         private Panel    pnlBottom;
-        private Button   btnClose;
-        private Button   btnCheckAgain;
+        private Button   btnCancel;
+        private Button   btnAllow;
+        private Button   btnForbid;
     }
 }

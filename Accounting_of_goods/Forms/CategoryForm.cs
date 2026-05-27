@@ -44,7 +44,7 @@
 
             if (_categoryService.CategoryExists(name))
             {
-                MessageBox.Show("РљР°С‚РµРіРѕСЂРёСЏ СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚!", "РћС€РёР±РєР°", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Категория уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -58,17 +58,17 @@
             if (e.RowIndex < 0) return;
 
             int id = (int)dataGridView1.Rows[e.RowIndex].Cells["ID"].Value;
-            string name = dataGridView1.Rows[e.RowIndex].Cells["РќР°Р·РІР°РЅРёРµ"].Value.ToString();
+            string name = dataGridView1.Rows[e.RowIndex].Cells["Название"].Value.ToString();
 
             if (dataGridView1.Columns[e.ColumnIndex].Name == "DeleteCol")
             {
                 if (_categoryService.HasProducts(id))
                 {
-                    MessageBox.Show("РќРµР»СЊР·СЏ СѓРґР°Р»РёС‚СЊ РєР°С‚РµРіРѕСЂРёСЋ, РІ РєРѕС‚РѕСЂРѕР№ РµСЃС‚СЊ С‚РѕРІР°СЂС‹!", "РћС€РёР±РєР°", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Нельзя удалить категорию, в которой есть товары!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                if (MessageBox.Show($"РЈРґР°Р»РёС‚СЊ В«{name}В»?", "Р’РѕРїСЂРѕСЃ", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show($"Удалить «{name}»?", "Вопрос", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     _categoryService.DeleteCategory(id);
                     RefreshGrid();
@@ -76,7 +76,7 @@
             }
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "EditCol")
             {
-                string newName = Microsoft.VisualBasic.Interaction.InputBox("Р’РІРµРґРёС‚Рµ РЅРѕРІРѕРµ РЅР°Р·РІР°РЅРёРµ:", "Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ", name);
+                string newName = Microsoft.VisualBasic.Interaction.InputBox("Введите новое название:", "Редактирование", name);
                 if (!string.IsNullOrEmpty(newName) && newName != name)
                 {
                     _categoryService.UpdateCategoryName(id, newName);

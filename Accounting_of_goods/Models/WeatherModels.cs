@@ -1,4 +1,4 @@
-namespace WinFormsApp1.Models
+﻿namespace WinFormsApp1.Models
 {
     public class DayForecast
     {

@@ -1,31 +1,18 @@
-﻿namespace Accounting_of_goods
+namespace Accounting_of_goods
 {
     partial class DeliveryForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
-            {
                 components.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             cmbProduct = new ComboBox();
@@ -45,6 +32,10 @@
             btnAddToList = new Button();
             numSellingPrice = new NumericUpDown();
             label6 = new Label();
+            lblSupplierInn = new Label();
+            txtSupplierInn = new TextBox();
+            btnVerifyInn = new Button();
+            lblInnStatus = new Label();
             ((System.ComponentModel.ISupportInitialize)numQty).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numPrice).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvPreview).BeginInit();
@@ -217,6 +208,48 @@
             label6.TabIndex = 18;
             label6.Text = "Цена продажи";
             // 
+            // lblSupplierInn
+            // 
+            lblSupplierInn.AutoSize = true;
+            lblSupplierInn.Location = new Point(55, 849);
+            lblSupplierInn.Name = "lblSupplierInn";
+            lblSupplierInn.Size = new Size(210, 32);
+            lblSupplierInn.TabIndex = 19;
+            lblSupplierInn.Text = "ИНН поставщика:";
+            // 
+            // txtSupplierInn
+            // 
+            txtSupplierInn.BorderStyle = BorderStyle.FixedSingle;
+            txtSupplierInn.Location = new Point(271, 849);
+            txtSupplierInn.MaxLength = 12;
+            txtSupplierInn.Name = "txtSupplierInn";
+            txtSupplierInn.PlaceholderText = "10 или 12 цифр";
+            txtSupplierInn.Size = new Size(244, 39);
+            txtSupplierInn.TabIndex = 20;
+            txtSupplierInn.TextChanged += txtSupplierInn_TextChanged;
+            txtSupplierInn.KeyDown += txtSupplierInn_KeyDown;
+            txtSupplierInn.KeyPress += txtSupplierInn_KeyPress;
+            // 
+            // btnVerifyInn
+            // 
+            btnVerifyInn.Location = new Point(531, 849);
+            btnVerifyInn.Name = "btnVerifyInn";
+            btnVerifyInn.Size = new Size(154, 43);
+            btnVerifyInn.TabIndex = 21;
+            btnVerifyInn.Text = "Проверить";
+            btnVerifyInn.UseVisualStyleBackColor = true;
+            btnVerifyInn.Click += btnVerifyInn_Click;
+            // 
+            // lblInnStatus
+            // 
+            lblInnStatus.AutoSize = true;
+            lblInnStatus.Font = new Font("Arial", 8.5F, FontStyle.Bold);
+            lblInnStatus.ForeColor = Color.Gray;
+            lblInnStatus.Location = new Point(625, 28);
+            lblInnStatus.Name = "lblInnStatus";
+            lblInnStatus.Size = new Size(0, 27);
+            lblInnStatus.TabIndex = 22;
+            // 
             // DeliveryForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
@@ -239,6 +272,10 @@
             Controls.Add(numQty);
             Controls.Add(cmbSize);
             Controls.Add(cmbProduct);
+            Controls.Add(lblInnStatus);
+            Controls.Add(btnVerifyInn);
+            Controls.Add(txtSupplierInn);
+            Controls.Add(lblSupplierInn);
             Margin = new Padding(5, 6, 5, 6);
             Name = "DeliveryForm";
             Text = "Складской учет – Поставки";
@@ -270,5 +307,9 @@
         private Button btnAddToList;
         private NumericUpDown numSellingPrice;
         private Label label6;
+        private Label lblSupplierInn;
+        private TextBox txtSupplierInn;
+        private Button btnVerifyInn;
+        private Label lblInnStatus;
     }
 }

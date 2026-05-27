@@ -1,4 +1,4 @@
-namespace WinFormsApp1.Services
+﻿namespace WinFormsApp1.Services
 {
     public class HeatMapService : IHeatMapService
     {

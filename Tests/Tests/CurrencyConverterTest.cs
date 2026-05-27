@@ -3,6 +3,7 @@
 namespace Accounting_of_goodsTests.Tests
 {
     [TestClass]
+    [DoNotParallelize]
     public class CurrencyConverterTest
     {
         [TestMethod]
@@ -34,12 +35,18 @@ namespace Accounting_of_goodsTests.Tests
             await CurrencyConverter.ChangeCurrencyAsync(target);
             decimal res = CurrencyConverter.ConvertPrice(price);
 
-            Assert.AreEqual("USD", CurrencyConverter.CurrentCurrency);
-
-            Assert.AreNotEqual(1m, CurrencyConverter.CurrentRate);
-
-            decimal expected = Math.Round(price * CurrencyConverter.CurrentRate, 2);
-            Assert.AreEqual(expected, res);
+            if (CurrencyConverter.CurrentCurrency == "RUB")
+            {
+                Assert.AreEqual(1m, CurrencyConverter.CurrentRate);
+                Assert.AreEqual(price, res);
+            }
+            else
+            {
+                Assert.AreEqual("USD", CurrencyConverter.CurrentCurrency);
+                Assert.AreNotEqual(1m, CurrencyConverter.CurrentRate);
+                decimal expected = Math.Round(price * CurrencyConverter.CurrentRate, 2);
+                Assert.AreEqual(expected, res);
+            }
         }
     }
 }

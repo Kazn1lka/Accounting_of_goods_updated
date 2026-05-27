@@ -35,7 +35,12 @@ namespace WinFormsApp1
             lblInnStatus = new Label();
             label6 = new Label();
             txtTotalSum = new TextBox();
+            grpWeather = new GroupBox();
+            lblRegionTitle = new Label();
+            txtRegion = new TextBox();
+            lblWeatherAlert = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvCart).BeginInit();
+            grpWeather.SuspendLayout();
             SuspendLayout();
             // 
             // lblTitle
@@ -140,7 +145,7 @@ namespace WinFormsApp1
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.Font = new Font("Arial", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            btnCancel.Location = new Point(864, 855);
+            btnCancel.Location = new Point(905, 855);
             btnCancel.Margin = new Padding(6);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(214, 75);
@@ -263,7 +268,7 @@ namespace WinFormsApp1
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(202, 718);
+            label6.Location = new Point(199, 628);
             label6.Margin = new Padding(5, 0, 5, 0);
             label6.Name = "label6";
             label6.Size = new Size(192, 32);
@@ -272,12 +277,55 @@ namespace WinFormsApp1
             // 
             // txtTotalSum
             // 
-            txtTotalSum.Location = new Point(202, 768);
+            txtTotalSum.Location = new Point(199, 678);
             txtTotalSum.Margin = new Padding(5);
             txtTotalSum.Name = "txtTotalSum";
             txtTotalSum.ReadOnly = true;
             txtTotalSum.Size = new Size(201, 39);
             txtTotalSum.TabIndex = 18;
+            // 
+            // grpWeather
+            // 
+            grpWeather.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            grpWeather.Controls.Add(lblRegionTitle);
+            grpWeather.Controls.Add(txtRegion);
+            grpWeather.Controls.Add(lblWeatherAlert);
+            grpWeather.Font = new Font("Arial", 9F, FontStyle.Bold);
+            grpWeather.Location = new Point(52, 743);
+            grpWeather.Name = "grpWeather";
+            grpWeather.Size = new Size(475, 205);
+            grpWeather.TabIndex = 22;
+            grpWeather.TabStop = false;
+            grpWeather.Text = "Геолокация и погода";
+            // 
+            // lblRegionTitle
+            // 
+            lblRegionTitle.AutoSize = true;
+            lblRegionTitle.Font = new Font("Arial", 8.25F);
+            lblRegionTitle.Location = new Point(12, 30);
+            lblRegionTitle.Name = "lblRegionTitle";
+            lblRegionTitle.Size = new Size(88, 25);
+            lblRegionTitle.TabIndex = 0;
+            lblRegionTitle.Text = "Регион:";
+            // 
+            // txtRegion
+            // 
+            txtRegion.Font = new Font("Arial", 8.25F);
+            txtRegion.Location = new Point(112, 27);
+            txtRegion.Name = "txtRegion";
+            txtRegion.Size = new Size(349, 33);
+            txtRegion.TabIndex = 1;
+            // 
+            // lblWeatherAlert
+            // 
+            lblWeatherAlert.BorderStyle = BorderStyle.FixedSingle;
+            lblWeatherAlert.Font = new Font("Arial", 8F);
+            lblWeatherAlert.Location = new Point(12, 63);
+            lblWeatherAlert.Name = "lblWeatherAlert";
+            lblWeatherAlert.Padding = new Padding(3);
+            lblWeatherAlert.Size = new Size(450, 99);
+            lblWeatherAlert.TabIndex = 2;
+            lblWeatherAlert.Text = "Введите регион и нажмите Enter";
             // 
             // ShipmentForm
             // 
@@ -287,6 +335,7 @@ namespace WinFormsApp1
             Controls.Add(txtTotalSum);
             Controls.Add(label6);
             Controls.Add(lblInnStatus);
+            Controls.Add(grpWeather);
             Controls.Add(btnVerifyInn);
             Controls.Add(txtInn);
             Controls.Add(lblInnLabel);
@@ -312,6 +361,8 @@ namespace WinFormsApp1
             Text = "Складской учёт — Оформление отгрузки";
             Load += ShipmentForm_Load;
             ((System.ComponentModel.ISupportInitialize)dgvCart).EndInit();
+            grpWeather.ResumeLayout(false);
+            grpWeather.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -337,6 +388,10 @@ namespace WinFormsApp1
         private TextBox        txtInn;
         private Button         btnVerifyInn;
         private Label          lblInnStatus;
+        private GroupBox       grpWeather;
+        private Label          lblRegionTitle;
+        private TextBox        txtRegion;
+        private Label          lblWeatherAlert;
         // Итог
         private Label          label6;
         private TextBox        txtTotalSum;

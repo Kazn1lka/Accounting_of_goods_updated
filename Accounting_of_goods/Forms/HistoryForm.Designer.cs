@@ -1,4 +1,4 @@
-﻿namespace WinFormsApp1
+namespace WinFormsApp1
 {
     partial class HistoryForm
     {
@@ -42,6 +42,8 @@
             lblTotalRevenue = new TextBox();
             lblTotalProfit = new TextBox();
             btnExportCSV = new Button();
+            labelLoss = new Label();
+            lblTotalLoss = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dgvHistory).BeginInit();
             SuspendLayout();
             // 
@@ -146,35 +148,53 @@
             label4.AutoSize = true;
             label4.Location = new Point(12, 528);
             label4.Name = "label4";
-            label4.Size = new Size(188, 40);
+            label4.Size = new Size(160, 40);
             label4.TabIndex = 7;
             label4.Text = "Общая сумма отгрузок за\r\nвыбранный период\r\n";
             label4.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // lblTotalRevenue
+            // 
+            lblTotalRevenue.Location = new Point(175, 535);
+            lblTotalRevenue.Name = "lblTotalRevenue";
+            lblTotalRevenue.ReadOnly = true;
+            lblTotalRevenue.Size = new Size(120, 27);
+            lblTotalRevenue.TabIndex = 9;
+            // 
+            // labelLoss
+            // 
+            labelLoss.AutoSize = true;
+            labelLoss.Location = new Point(310, 528);
+            labelLoss.Name = "labelLoss";
+            labelLoss.Size = new Size(160, 40);
+            labelLoss.TabIndex = 12;
+            labelLoss.Text = "Общий убыток списаний за\r\nвыбранный период\r\n";
+            labelLoss.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblTotalLoss
+            // 
+            lblTotalLoss.Location = new Point(475, 535);
+            lblTotalLoss.Name = "lblTotalLoss";
+            lblTotalLoss.ReadOnly = true;
+            lblTotalLoss.Size = new Size(120, 27);
+            lblTotalLoss.TabIndex = 13;
+            // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(401, 538);
+            label5.Location = new Point(610, 528);
             label5.Name = "label5";
-            label5.Size = new Size(286, 20);
+            label5.Size = new Size(160, 40);
             label5.TabIndex = 8;
-            label5.Text = "Общая прибыль за выбранный период\r\n";
+            label5.Text = "Общая прибыль за\r\nвыбранный период\r\n";
             label5.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // lblTotalRevenue
-            // 
-            lblTotalRevenue.Location = new Point(224, 535);
-            lblTotalRevenue.Name = "lblTotalRevenue";
-            lblTotalRevenue.ReadOnly = true;
-            lblTotalRevenue.Size = new Size(125, 27);
-            lblTotalRevenue.TabIndex = 9;
             // 
             // lblTotalProfit
             // 
-            lblTotalProfit.Location = new Point(724, 535);
+            lblTotalProfit.Location = new Point(775, 535);
             lblTotalProfit.Name = "lblTotalProfit";
             lblTotalProfit.ReadOnly = true;
-            lblTotalProfit.Size = new Size(125, 27);
+            lblTotalProfit.Size = new Size(120, 27);
             lblTotalProfit.TabIndex = 10;
             // 
             // btnExportCSV
@@ -195,6 +215,8 @@
             Controls.Add(btnExportCSV);
             Controls.Add(lblTotalProfit);
             Controls.Add(lblTotalRevenue);
+            Controls.Add(lblTotalLoss);
+            Controls.Add(labelLoss);
             Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(label3);
@@ -230,6 +252,8 @@
         private Label label5;
         private TextBox lblTotalRevenue;
         private TextBox lblTotalProfit;
+        private Label labelLoss;
+        private TextBox lblTotalLoss;
         private Button btnExportCSV;
     }
 }

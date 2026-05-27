@@ -1,4 +1,4 @@
-namespace WinFormsApp1
+﻿namespace WinFormsApp1
 {
     public partial class HeatMapSettingsForm : Form
     {
@@ -16,36 +16,32 @@ namespace WinFormsApp1
 
         private void HeatMapSettingsForm_Load(object sender, EventArgs e)
         {
-            // Устанавливаем значения ДО подписки на события, чтобы не срабатывали ограничения
-            numGreen.Value  = _source.GreenThresholdDays;
+            numGreen.Value = _source.GreenThresholdDays;
             numYellow.Value = _source.YellowThresholdDays;
             numOrange.Value = _source.OrangeThresholdDays;
 
-            numTGreen.Value  = _source.TurnoverGreenMin;
+            numTGreen.Value = _source.TurnoverGreenMin;
             numTYellow.Value = _source.TurnoverYellowMin;
             numTOrange.Value = _source.TurnoverOrangeMin;
 
             numRefresh.Value = _source.AutoRefreshSeconds;
 
-            chkEnabled.Checked   = _source.Enabled;
+            chkEnabled.Checked = _source.Enabled;
             chkShowNames.Checked = _source.ShowProductNames;
 
             cmbMode.SelectedIndex = _source.Mode == HeatMapMode.Expiry ? 0 : 1;
 
-            // Теперь применяем ограничения и подписываемся
             ApplyConstraints();
 
-            numGreen.ValueChanged  += numGreen_ValueChanged;
+            numGreen.ValueChanged += numGreen_ValueChanged;
             numYellow.ValueChanged += numYellow_ValueChanged;
             numOrange.ValueChanged += numOrange_ValueChanged;
-            numTGreen.ValueChanged  += numTGreen_ValueChanged;
+            numTGreen.ValueChanged += numTGreen_ValueChanged;
             numTYellow.ValueChanged += numTYellow_ValueChanged;
             numTOrange.ValueChanged += numTOrange_ValueChanged;
 
             UpdatePanelVisibility();
         }
-
-        // ── Ограничения порогов (Срок годности): Зелёный > Жёлтый > Оранжевый ───
 
         private void numGreen_ValueChanged(object sender, EventArgs e)
         {
@@ -66,8 +62,6 @@ namespace WinFormsApp1
         {
             numYellow.Minimum = numOrange.Value + 1;
         }
-
-        // ── Ограничения порогов (Оборачиваемость): Зелёный > Жёлтый > Оранжевый ─
 
         private void numTGreen_ValueChanged(object sender, EventArgs e)
         {
@@ -100,18 +94,14 @@ namespace WinFormsApp1
             numTYellow.Minimum = numTOrange.Value + 1;
         }
 
-        // ── Видимость GroupBox ──────────────────────────────────────────────────
-
         private void cmbMode_SelectedIndexChanged(object sender, EventArgs e) => UpdatePanelVisibility();
 
         private void UpdatePanelVisibility()
         {
             bool isExpiry = cmbMode.SelectedIndex == 0;
-            grpExpiry.Visible   = isExpiry;
+            grpExpiry.Visible = isExpiry;
             grpTurnover.Visible = !isExpiry;
         }
-
-        // ── Применить ──────────────────────────────────────────────────────────
 
         private void btnApply_Click(object sender, EventArgs e)
         {
@@ -125,31 +115,30 @@ namespace WinFormsApp1
 
             Result = new HeatMapSettings
             {
-                Enabled          = chkEnabled.Checked,
+                Enabled = chkEnabled.Checked,
                 ShowProductNames = chkShowNames.Checked,
-                Mode             = cmbMode.SelectedIndex == 0 ? HeatMapMode.Expiry : HeatMapMode.Turnover,
+                Mode = cmbMode.SelectedIndex == 0 ? HeatMapMode.Expiry : HeatMapMode.Turnover,
 
-                GreenThresholdDays  = (int)numGreen.Value,
+                GreenThresholdDays = (int)numGreen.Value,
                 YellowThresholdDays = (int)numYellow.Value,
                 OrangeThresholdDays = (int)numOrange.Value,
 
-                TurnoverGreenMin  = (int)numTGreen.Value,
+                TurnoverGreenMin = (int)numTGreen.Value,
                 TurnoverYellowMin = (int)numTYellow.Value,
                 TurnoverOrangeMin = (int)numTOrange.Value,
 
                 AutoRefreshSeconds = (int)numRefresh.Value
             };
 
-            // Обновляем глобальный синглтон
-            HeatMapSettings.Current.Enabled            = Result.Enabled;
-            HeatMapSettings.Current.ShowProductNames   = Result.ShowProductNames;
-            HeatMapSettings.Current.Mode               = Result.Mode;
-            HeatMapSettings.Current.GreenThresholdDays  = Result.GreenThresholdDays;
+            HeatMapSettings.Current.Enabled = Result.Enabled;
+            HeatMapSettings.Current.ShowProductNames = Result.ShowProductNames;
+            HeatMapSettings.Current.Mode = Result.Mode;
+            HeatMapSettings.Current.GreenThresholdDays = Result.GreenThresholdDays;
             HeatMapSettings.Current.YellowThresholdDays = Result.YellowThresholdDays;
             HeatMapSettings.Current.OrangeThresholdDays = Result.OrangeThresholdDays;
-            HeatMapSettings.Current.TurnoverGreenMin   = Result.TurnoverGreenMin;
-            HeatMapSettings.Current.TurnoverYellowMin  = Result.TurnoverYellowMin;
-            HeatMapSettings.Current.TurnoverOrangeMin  = Result.TurnoverOrangeMin;
+            HeatMapSettings.Current.TurnoverGreenMin = Result.TurnoverGreenMin;
+            HeatMapSettings.Current.TurnoverYellowMin = Result.TurnoverYellowMin;
+            HeatMapSettings.Current.TurnoverOrangeMin = Result.TurnoverOrangeMin;
             HeatMapSettings.Current.AutoRefreshSeconds = Result.AutoRefreshSeconds;
 
             DialogResult = DialogResult.OK;
@@ -165,16 +154,15 @@ namespace WinFormsApp1
 
         private void btnResetDefaults_Click(object sender, EventArgs e)
         {
-            // Временно снимаем ограничения чтобы не мешали сбросу
             numYellow.Minimum = 1;
             numOrange.Minimum = 0;
             numTYellow.Minimum = 1;
             numTOrange.Minimum = 0;
 
-            numGreen.Value   = 90;
-            numYellow.Value  = 20;
-            numOrange.Value  = 7;
-            numTGreen.Value  = 10;
+            numGreen.Value = 90;
+            numYellow.Value = 20;
+            numOrange.Value = 7;
+            numTGreen.Value = 10;
             numTYellow.Value = 4;
             numTOrange.Value = 1;
             numRefresh.Value = 0;

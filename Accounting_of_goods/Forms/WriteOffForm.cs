@@ -4,7 +4,7 @@
     {
         private readonly IWriteOffService _writeOffService;
         private int _userId;
-        private string _currentArticle;
+        private List<ExpiredSupplyItem> _expiredItems = new List<ExpiredSupplyItem>();
 
         public WriteOffForm(IWriteOffService writeOffService)
         {
@@ -15,85 +15,154 @@
         public void Init(int userId, string article = null)
         {
             _userId = userId;
-            _currentArticle = article;
         }
 
         private void WriteOffForm_Load(object sender, EventArgs e)
         {
-            cmbProduct.DataSource = _writeOffService.GetProductNames();
-            cmbProduct.SelectedIndex = -1;
-
-            if (!string.IsNullOrEmpty(_currentArticle))
-            {
-                var prodInfo = _writeOffService.GetProductByArticle(_currentArticle);
-                if (prodInfo != null)
-                {
-                    dynamic d = prodInfo;
-                    cmbProduct.SelectedItem = d.Name;
-                    cmbSize.SelectedItem = d.Size;
-                }
-            }
+            SetupGrid();
+            LoadExpiredItems();
         }
 
-        private void cmbProduct_SelectedIndexChanged(object sender, EventArgs e)
+        private void SetupGrid()
         {
-            if (cmbProduct.SelectedItem == null) return;
-            cmbSize.DataSource = _writeOffService.GetSizesForProduct(cmbProduct.Text);
+            dgvExpired.Columns.Add("SupplyId", "ID партии");
+            dgvExpired.Columns.Add("Article", "Артикул");
+            dgvExpired.Columns.Add("ProductName", "Название");
+            dgvExpired.Columns.Add("Size", "Размер");
+            dgvExpired.Columns.Add("Quantity", "Остаток");
+            dgvExpired.Columns.Add("ExpiryDate", "Срок годности");
+            dgvExpired.Columns.Add("DaysExpired", "Просрочено (дн.)");
+
+            dgvExpired.Columns["SupplyId"].Visible = false;
+            dgvExpired.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvExpired.RowHeadersVisible = false;
+            dgvExpired.SelectionChanged += dgvExpired_SelectionChanged;
         }
 
-        private void cmbSize_SelectedIndexChanged(object sender, EventArgs e)
+        private void LoadExpiredItems()
         {
-            if (cmbSize.SelectedItem == null) return;
+            _expiredItems = _writeOffService.GetExpiredItems();
+            dgvExpired.Rows.Clear();
 
-            var details = _writeOffService.GetProductDetails(cmbProduct.Text, cmbSize.Text);
-            if (details != null)
+            if (_expiredItems.Count == 0)
             {
-                dynamic d = details;
-                _currentArticle = d.Article;
-                lblAvailable.Text = d.CurrentStock.ToString();
+                lblStatus.Text = "Просроченных товаров не найдено.";
+                lblTotalLoss.Text = "Общий убыток: 0,00 " + Accounting_of_goods.CurrencyConverter.CurrentCurrency;
+                btnWriteOff.Enabled = false;
+                return;
             }
+
+            lblStatus.Text = "Найдено: " + _expiredItems.Count + " поз.";
+            btnWriteOff.Enabled = true;
+
+            for (int i = 0; i < _expiredItems.Count; i++)
+            {
+                var item = _expiredItems[i];
+                dgvExpired.Rows.Add(
+                    item.SupplyId,
+                    item.Article,
+                    item.ProductName,
+                    item.Size,
+                    item.Quantity,
+                    item.ExpiryDate.ToLocalTime().ToShortDateString(),
+                    item.DaysExpired
+                );
+
+                if (item.DaysExpired > 30)
+                    dgvExpired.Rows[i].DefaultCellStyle.ForeColor = Color.DarkRed;
+                else
+                    dgvExpired.Rows[i].DefaultCellStyle.ForeColor = Color.OrangeRed;
+            }
+
+            UpdateTotalLoss();
         }
 
         private void btnWriteOff_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(_currentArticle))
+            if (dgvExpired.SelectedRows.Count == 0)
             {
-                MessageBox.Show("РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РІС‹Р±РµСЂРёС‚Рµ С‚РѕРІР°СЂ Рё СЂР°Р·РјРµСЂ!", "Р’РЅРёРјР°РЅРёРµ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Выберите строки для списания.", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            int qty = (int)numQty.Value;
-
-            if (qty <= 0)
-            {
-                MessageBox.Show("РЈРєР°Р¶РёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ РґР»СЏ СЃРїРёСЃР°РЅРёСЏ!", "Р’РЅРёРјР°РЅРёРµ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            string reason = txtReason.Text.Trim(); 
+            string reason = txtReason.Text.Trim();
             if (string.IsNullOrEmpty(reason))
             {
-                MessageBox.Show("РЈРєР°Р¶РёС‚Рµ РїСЂРёС‡РёРЅСѓ СЃРїРёСЃР°РЅРёСЏ!", "Р’РЅРёРјР°РЅРёРµ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Укажите причину списания.", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            try
-            {
-                int currentUserId = _userId > 0 ? _userId : 1;
+            int userId = _userId > 0 ? _userId : 1;
+            int successCount = 0;
+            var errors = new List<string>();
 
-                _writeOffService.ProcessWriteOff(currentUserId, _currentArticle, qty, reason);
-                MessageBox.Show("РўРѕРІР°СЂ СѓСЃРїРµС€РЅРѕ СЃРїРёСЃР°РЅ!", "РЈСЃРїРµС…", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close();
-            }
-            catch (Exception ex)
+            foreach (DataGridViewRow row in dgvExpired.SelectedRows)
             {
-                MessageBox.Show("РћС€РёР±РєР°: " + ex.Message, "РћС€РёР±РєР°", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!int.TryParse(row.Cells["SupplyId"].Value?.ToString(), out int supplyId))
+                    continue;
+
+                if (!int.TryParse(row.Cells["Quantity"].Value?.ToString(), out int qty))
+                    continue;
+
+                try
+                {
+                    _writeOffService.ProcessWriteOffBySupply(userId, supplyId, qty, reason);
+                    successCount++;
+                }
+                catch (Exception ex)
+                {
+                    string name = row.Cells["ProductName"].Value?.ToString();
+                    errors.Add(name + ": " + ex.Message);
+                }
+            }
+
+            if (errors.Count > 0)
+            {
+                string errText = "Часть позиций не удалось списать:\n" + string.Join("\n", errors);
+                MessageBox.Show(errText, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            if (successCount > 0)
+            {
+                MessageBox.Show("Списано позиций: " + successCount, "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LoadExpiredItems();
             }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void dgvExpired_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateTotalLoss();
+        }
+
+        private void UpdateTotalLoss()
+        {
+            decimal totalLoss = 0;
+            decimal selectedLoss = 0;
+            string currency = Accounting_of_goods.CurrencyConverter.CurrentCurrency;
+
+            foreach (var item in _expiredItems)
+            {
+                totalLoss += Accounting_of_goods.CurrencyConverter.ConvertPrice(item.PurchasePrice) * item.Quantity;
+            }
+
+            foreach (DataGridViewRow row in dgvExpired.SelectedRows)
+            {
+                if (row.Cells["SupplyId"].Value != null && int.TryParse(row.Cells["SupplyId"].Value.ToString(), out int supplyId))
+                {
+                    var item = _expiredItems.FirstOrDefault(i => i.SupplyId == supplyId);
+                    if (item != null)
+                    {
+                        selectedLoss += Accounting_of_goods.CurrencyConverter.ConvertPrice(item.PurchasePrice) * item.Quantity;
+                    }
+                }
+            }
+
+            lblTotalLoss.Text = $"Общий убыток: {totalLoss:N2} {currency} (выбрано: {selectedLoss:N2} {currency})";
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace WinFormsApp1.Interfaces
+﻿namespace WinFormsApp1.Interfaces
 {
     public interface IWeatherService
     {

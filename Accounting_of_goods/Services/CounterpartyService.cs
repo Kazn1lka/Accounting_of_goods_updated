@@ -1,22 +1,23 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using WinFormsApp1.Interfaces;
+
 namespace WinFormsApp1.Services
 {
-    /// <summary>
-    /// Сервис проверки контрагента по ИНН.
-    /// Использует API dadata.ru для получения реквизитов и открытые данные ФНС для проверки статуса.
-    /// </summary>
     public class CounterpartyService : ICounterpartyService
     {
-        // API dadata.ru — бесплатный план: 10 000 запросов/сут.
-        // Токен можно сменить в настройках без перекомпиляции через app.config / env-переменную.
-        private static readonly string DadataToken =
-            Environment.GetEnvironmentVariable("DADATA_TOKEN") ?? "YOUR_DADATA_TOKEN_HERE";
+        private static readonly string DadataToken = "6827c9916b40b35282284945ddfbe9aa6eb1bc5";
+        private static readonly string DadataSecret = "c5ed74682d541612d8e3902c6c126b95084d9b41";
 
         private static readonly HttpClient _http = new HttpClient
         {
             Timeout = TimeSpan.FromSeconds(15)
         };
-
-        // ---- Публичный интерфейс -----------------------------------------------
 
         public (bool isValid, string error) ValidateInn(string inn)
         {
@@ -38,29 +39,24 @@ namespace WinFormsApp1.Services
 
         public async Task<CounterpartyInfo> CheckByInnAsync(string inn)
         {
-            // 1. Получаем основные реквизиты через dadata
             CounterpartyInfo info = await FetchFromDadataAsync(inn);
 
-            // 2. Параллельно запускаем три дополнительных проверки
-            var debtorTask     = CheckTaxDebtorAsync(inn);
-            var bankruptTask   = CheckBankruptAsync(inn);
-            var disqualTask    = CheckDisqualifiedAsync(inn);
+            var debtorTask = CheckTaxDebtorAsync(inn);
+            var bankruptTask = CheckBankruptAsync(inn);
+            var disqualTask = CheckDisqualifiedAsync(inn);
 
             await Task.WhenAll(debtorTask, bankruptTask, disqualTask);
 
-            // 3. Собираем итог
             return info with
             {
-                IsTaxDebtor              = debtorTask.Result.result,
-                TaxDebtorCheckError      = debtorTask.Result.error,
-                IsBankrupt               = bankruptTask.Result.result,
-                BankruptCheckError       = bankruptTask.Result.error,
+                IsTaxDebtor = debtorTask.Result.result,
+                TaxDebtorCheckError = debtorTask.Result.error,
+                IsBankrupt = bankruptTask.Result.result,
+                BankruptCheckError = bankruptTask.Result.error,
                 HasDisqualifiedDirectors = disqualTask.Result.result,
-                DisqualifiedCheckError   = disqualTask.Result.error,
+                DisqualifiedCheckError = disqualTask.Result.error
             };
         }
-
-        // ---- Алгоритм контрольных цифр ИНН -------------------------------------
 
         private static (bool, string) ValidateInn10(string inn)
         {
@@ -82,26 +78,25 @@ namespace WinFormsApp1.Services
                 : (false, "Контрольные цифры ИНН не совпадают. Проверьте введённые данные.");
         }
 
-        // ---- dadata.ru: получение реквизитов -----------------------------------
-
         private static async Task<CounterpartyInfo> FetchFromDadataAsync(string inn)
         {
-            // Если токен не задан — возвращаем базовый объект без дополнительных данных
-            if (DadataToken == "YOUR_DADATA_TOKEN_HERE")
+            if (string.IsNullOrEmpty(DadataToken) || DadataToken == "YOUR_DADATA_TOKEN_HERE")
                 return new CounterpartyInfo { Inn = inn, StatusDescription = "Токен dadata не настроен — данные недоступны." };
 
             try
             {
-                using var req = new HttpRequestMessage(HttpMethod.Post,
-                    "https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party");
+                using var req = new HttpRequestMessage(HttpMethod.Post, "https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party");
                 req.Headers.Add("Authorization", $"Token {DadataToken}");
-                req.Content = new StringContent(
-                    $"{{\"query\":\"{inn}\",\"count\":1}}",
-                    Encoding.UTF8, "application/json");
+                req.Headers.Add("Accept", "application/json");
+                req.Headers.TryAddWithoutValidation("User-Agent", "WinFormsApp1/1.0");
+                req.Content = new StringContent($"{{\"query\":\"{inn}\",\"count\":1}}", Encoding.UTF8, "application/json");
 
                 var resp = await _http.SendAsync(req);
                 if (!resp.IsSuccessStatusCode)
-                    return new CounterpartyInfo { Inn = inn, StatusDescription = $"Ошибка API dadata: {(int)resp.StatusCode}" };
+                {
+                    string errorContent = await resp.Content.ReadAsStringAsync();
+                    return new CounterpartyInfo { Inn = inn, StatusDescription = $"Ошибка API dadata: {(int)resp.StatusCode}. Ответ API: {errorContent}" };
+                }
 
                 string json = await resp.Content.ReadAsStringAsync();
                 using var doc = JsonDocument.Parse(json);
@@ -113,34 +108,34 @@ namespace WinFormsApp1.Services
                 var d = suggestions[0].GetProperty("data");
 
                 string rawStatus = TryGet(d, "state", "status");
-                string address   = TryGetPath(d, "address", "value");
-                string director  = TryGetPath(d, "management", "name");
-                string ogrn      = TryGet(d, "ogrn");
-                string kpp       = TryGet(d, "kpp");
-                string fullName  = TryGet(d, "name", "full_with_opf");
-                string shortName = TryGet(d, "name", "short_with_opf");
+                string address = TryGetPath(d, "address", "value");
+                string director = TryGetPath(d, "management", "name");
+                string Ogrn = TryGet(d, "ogrn");
+                string Kpp = TryGet(d, "kpp");
+                string FullName = TryGet(d, "name", "full_with_opf");
+                string ShortName = TryGet(d, "name", "short_with_opf");
 
                 string statusDesc = rawStatus switch
                 {
-                    "ACTIVE"        => "✅ Действующая",
-                    "LIQUIDATING"   => "⚠️ В процессе ликвидации",
-                    "LIQUIDATED"    => "❌ Ликвидирована",
-                    "REORGANIZING"  => "🔄 Реорганизация",
-                    "BANKRUPT"      => "🚫 Банкротство",
-                    _               => rawStatus ?? "Неизвестно"
+                    "ACTIVE" => "✅ Действующая",
+                    "LIQUIDATING" => "⚠️ В процессе ликвидации",
+                    "LIQUIDATED" => "❌ Ликвидирована",
+                    "REORGANIZING" => "🔄 Реорганизация",
+                    "BANKRUPT" => "🚫 Банкротство",
+                    _ => rawStatus ?? "Неизвестно"
                 };
 
                 return new CounterpartyInfo
                 {
-                    Inn             = inn,
-                    Kpp             = kpp,
-                    Ogrn            = ogrn,
-                    FullName        = fullName,
-                    ShortName       = shortName,
-                    Status          = rawStatus,
+                    Inn = inn,
+                    Kpp = Kpp,
+                    Ogrn = Ogrn,
+                    FullName = FullName,
+                    ShortName = ShortName,
+                    Status = rawStatus,
                     StatusDescription = statusDesc,
-                    Address         = address,
-                    DirectorName    = director,
+                    Address = address,
+                    DirectorName = director
                 };
             }
             catch (Exception ex)
@@ -149,20 +144,14 @@ namespace WinFormsApp1.Services
             }
         }
 
-        // ---- Проверка: налоговый должник (ФНС open-data) -----------------------
-        // ФНС публикует CSV-файлы с ИНН должников на сайте оперативных данных.
-        // Для простоты используем публичный эндпоинт search.nalog.ru (доступен без ключа).
-
         private static async Task<(bool? result, string error)> CheckTaxDebtorAsync(string inn)
         {
             try
             {
-                // ФНС: сервис «Прозрачный бизнес» — информация о задолженности
                 string url = $"https://pb.nalog.ru/company-ul.json?query={inn}&mode=1";
                 string json = await _http.GetStringAsync(url);
                 using var doc = JsonDocument.Parse(json);
 
-                // Если в ответе есть поле "debt" > 0 — должник
                 if (doc.RootElement.TryGetProperty("companyUl", out var arr) && arr.GetArrayLength() > 0)
                 {
                     var company = arr[0];
@@ -171,24 +160,20 @@ namespace WinFormsApp1.Services
                         bool isDebtor = debt.GetDecimal() > 0;
                         return (isDebtor, null);
                     }
-                    return (false, null); // долгов не обнаружено
+                    return (false, null);
                 }
                 return (false, null);
             }
             catch
             {
-                // API недоступно — не блокируем форму, просто помечаем как «не проверено»
                 return (null, "Сервис ФНС временно недоступен");
             }
         }
-
-        // ---- Проверка: банкротство (Федресурс) ---------------------------------
 
         private static async Task<(bool? result, string error)> CheckBankruptAsync(string inn)
         {
             try
             {
-                // Публичное API Единого федерального реестра сведений о банкротстве (ЕФРСБ)
                 string url = $"https://bankrot.fedresurs.ru/api/v1/bankrupts?inn={inn}&limit=1";
                 var resp = await _http.GetAsync(url);
                 if (!resp.IsSuccessStatusCode)
@@ -200,7 +185,6 @@ namespace WinFormsApp1.Services
                 if (doc.RootElement.TryGetProperty("total", out var total))
                     return (total.GetInt32() > 0, null);
 
-                // Если total не нашли, проверяем items
                 if (doc.RootElement.TryGetProperty("items", out var items))
                     return (items.GetArrayLength() > 0, null);
 
@@ -212,13 +196,10 @@ namespace WinFormsApp1.Services
             }
         }
 
-        // ---- Проверка: дисквалифицированные руководители (ФНС) -----------------
-
         private static async Task<(bool? result, string error)> CheckDisqualifiedAsync(string inn)
         {
             try
             {
-                // ФНС: реестр дисквалифицированных лиц (проверяем по ИНН организации)
                 string url = $"https://service.nalog.ru/disqualified.json?q={inn}";
                 string json = await _http.GetStringAsync(url);
                 using var doc = JsonDocument.Parse(json);
@@ -233,8 +214,6 @@ namespace WinFormsApp1.Services
                 return (null, "Реестр дисквалифицированных лиц временно недоступен");
             }
         }
-
-        // ---- Вспомогательные методы --------------------------------------------
 
         private static string TryGet(JsonElement el, params string[] path)
         {

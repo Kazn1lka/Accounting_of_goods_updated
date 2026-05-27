@@ -4,18 +4,21 @@ namespace WinFormsApp1
     {
         private readonly IShipmentService _shipmentService;
         private readonly ICounterpartyService _counterpartyService;
+        private readonly IWeatherService _weatherService;
         private readonly CounterpartyForm _counterpartyForm;
         private int _userId;
         private string _currentArticle;
         private decimal _currentPrice;
 
         private string _verifiedCompanyName;
+        private bool _isInnApproved = false;
 
-        public ShipmentForm(IShipmentService shipmentService, ICounterpartyService counterpartyService)
+        public ShipmentForm(IShipmentService shipmentService, ICounterpartyService counterpartyService, IWeatherService weatherService)
         {
             InitializeComponent();
             _shipmentService = shipmentService;
             _counterpartyService = counterpartyService;
+            _weatherService = weatherService;
             _counterpartyForm = new CounterpartyForm(_counterpartyService);
         }
 
@@ -49,6 +52,9 @@ namespace WinFormsApp1
             cmbProduct.SelectedIndex = -1;
 
             UpdateInnStatus(null, null);
+
+            txtRegion.KeyDown += txtRegion_KeyDown;
+            txtRegion.Leave += txtRegion_Leave;
         }
 
         private void cmbProduct_SelectedIndexChanged(object sender, EventArgs e)
@@ -131,29 +137,33 @@ namespace WinFormsApp1
             }
         }
 
-        private void UpdateInnStatus(bool? valid, string companyName)
+        private void UpdateInnStatus(bool? valid, string companyName, string reason = null)
         {
             if (valid == null)
             {
                 lblInnStatus.Text      = "";
                 lblInnStatus.ForeColor = Color.Gray;
                 _verifiedCompanyName   = null;
+                _isInnApproved         = false;
             }
             else if (valid == true)
             {
-                lblInnStatus.Text      = $"✔ {companyName}";
+                lblInnStatus.Text      = $"✔ Разрешен ({companyName})";
                 lblInnStatus.ForeColor = Color.DarkGreen;
                 _verifiedCompanyName   = companyName;
+                _isInnApproved         = true;
             }
             else
             {
-                lblInnStatus.Text      = "✖ Не прошёл проверку";
+                string suffix = string.IsNullOrEmpty(reason) ? "" : $" ({reason})";
+                lblInnStatus.Text      = $"✖ Запрещен{suffix}";
                 lblInnStatus.ForeColor = Color.DarkRed;
                 _verifiedCompanyName   = null;
+                _isInnApproved         = false;
             }
         }
 
-        private async void btnVerifyInn_Click(object sender, EventArgs e)
+        private void btnVerifyInn_Click(object sender, EventArgs e)
         {
             string inn = txtInn.Text.Trim();
 
@@ -161,60 +171,24 @@ namespace WinFormsApp1
             if (!isValid)
             {
                 MessageBox.Show(error, "Неверный ИНН", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                UpdateInnStatus(false, null);
+                UpdateInnStatus(false, null, "Неверный ИНН");
                 return;
             }
 
-            btnVerifyInn.Enabled = false;
-            btnVerifyInn.Text    = "...";
-            lblInnStatus.Text    = "Проверяется…";
-            lblInnStatus.ForeColor = Color.Gray;
-
-            try
+            _counterpartyForm.SetInn(inn);
+            if (_counterpartyForm.ShowDialog(this) == DialogResult.OK)
             {
-                var info = await _counterpartyService.CheckByInnAsync(inn);
+                string status = _counterpartyForm.FinalStatus;
+                string company = _counterpartyForm.CompanyName;
 
-                bool anyRed = info.IsTaxDebtor == true
-                           || info.IsBankrupt  == true
-                           || info.HasDisqualifiedDirectors == true;
-
-                string company = info.ShortName ?? info.FullName ?? inn;
-
-                if (anyRed)
-                {
-                    var answer = MessageBox.Show(
-                        $"Компания «{company}» имеет признаки риска:\n" +
-                        (info.IsTaxDebtor  == true ? "• Налоговый должник\n"       : "") +
-                        (info.IsBankrupt   == true ? "• В реестре банкротов\n"     : "") +
-                        (info.HasDisqualifiedDirectors == true ? "• Дисквалифицированный директор\n" : "") +
-                        "\nВсё равно продолжить отгрузку?",
-                        "Внимание! Риск контрагента",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-                    UpdateInnStatus(answer == DialogResult.Yes ? true : false, company);
-                }
-                else
+                if (status == "Разрешен")
                 {
                     UpdateInnStatus(true, company);
                 }
-
-                if (MessageBox.Show($"Статус: {info.StatusDescription}\n\nОткрыть полный отчёт?",
-                        "Результат проверки", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                else
                 {
-                    _counterpartyForm.ShowResult(info);
-                    _counterpartyForm.ShowDialog(this);
+                    UpdateInnStatus(false, company, "Запрещен");
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при проверке:\n{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lblInnStatus.Text      = "Ошибка проверки";
-                lblInnStatus.ForeColor = Color.DarkRed;
-            }
-            finally
-            {
-                btnVerifyInn.Enabled = true;
-                btnVerifyInn.Text    = "Проверить";
             }
         }
 
@@ -247,11 +221,24 @@ namespace WinFormsApp1
                 return;
             }
 
+            if (!_isInnApproved)
+            {
+                MessageBox.Show("Отгрузка запрещена. Получатель не прошёл проверку ИНН или проверка не выполнена.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             string recipient = _verifiedCompanyName ?? txtInn.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(recipient))
             {
                 MessageBox.Show("Укажите ИНН получателя!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string region = txtRegion.Text.Trim();
+            if (string.IsNullOrWhiteSpace(region))
+            {
+                MessageBox.Show("Укажите регион отгрузки!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -269,7 +256,7 @@ namespace WinFormsApp1
 
             try
             {
-                _shipmentService.ProcessShipment(_userId, recipient, items);
+                _shipmentService.ProcessShipment(_userId, recipient, region, items);
                 MessageBox.Show("Отгрузка успешно проведена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
             }
@@ -280,5 +267,88 @@ namespace WinFormsApp1
         }
 
         private void btnCancel_Click(object sender, EventArgs e) => this.Close();
+
+        private void txtRegion_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                UpdateWeatherForecast();
+            }
+        }
+
+        private void txtRegion_Leave(object sender, EventArgs e)
+        {
+            UpdateWeatherForecast();
+        }
+
+        private async void UpdateWeatherForecast()
+        {
+            string city = txtRegion.Text.Trim();
+            if (string.IsNullOrEmpty(city))
+            {
+                lblWeatherAlert.Text = "Введите регион и нажмите Enter";
+                lblWeatherAlert.ForeColor = Color.Black;
+                lblWeatherAlert.BackColor = SystemColors.Control;
+                return;
+            }
+
+            lblWeatherAlert.Text = "Загрузка погоды...";
+            lblWeatherAlert.ForeColor = Color.Gray;
+            lblWeatherAlert.BackColor = SystemColors.Control;
+
+            try
+            {
+                var result = await _weatherService.GetForecastAsync(city);
+                if (result == null || !result.Success)
+                {
+                    lblWeatherAlert.Text = "Не удалось загрузить погоду";
+                    lblWeatherAlert.ForeColor = Color.DarkRed;
+                    lblWeatherAlert.BackColor = Color.MistyRose;
+                    return;
+                }
+
+                bool alertNeeded = false;
+                string alertText = "";
+
+                for (int i = 0; i < result.Days.Count; i++)
+                {
+                    var day = result.Days[i];
+                    string dayName = i == 0 ? "Сегодня" : i == 1 ? "Завтра" : "Через 2 дня";
+
+                    if (day.TempMin < WeatherSettings.GlobalFrostThreshold)
+                    {
+                        alertText = $"{dayName} мороз {day.TempMin}°С\r\nтребуется термоконтейнер";
+                        alertNeeded = true;
+                        break;
+                    }
+                    else if (day.TempMax > WeatherSettings.GlobalHeatThreshold)
+                    {
+                        alertText = $"{dayName} жара +{day.TempMax}°C\r\nтребуется термоконтейнер";
+                        alertNeeded = true;
+                        break;
+                    }
+                }
+
+                if (!alertNeeded)
+                {
+                    lblWeatherAlert.Text = "Условия доставки в норме.\r\nСпециальных мер не требуется.";
+                    lblWeatherAlert.ForeColor = Color.DarkGreen;
+                    lblWeatherAlert.BackColor = Color.Honeydew;
+                }
+                else
+                {
+                    lblWeatherAlert.Text = alertText;
+                    lblWeatherAlert.ForeColor = Color.DarkRed;
+                    lblWeatherAlert.BackColor = Color.MistyRose;
+                }
+            }
+            catch
+            {
+                lblWeatherAlert.Text = "Ошибка загрузки погоды";
+                lblWeatherAlert.ForeColor = Color.DarkRed;
+                lblWeatherAlert.BackColor = Color.MistyRose;
+            }
+        }
     }
 }

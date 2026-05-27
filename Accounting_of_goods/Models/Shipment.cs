@@ -1,4 +1,4 @@
-namespace WinFormsApp1.Models
+﻿namespace WinFormsApp1.Models
 {
     public class Shipment
     {
@@ -6,8 +6,9 @@ namespace WinFormsApp1.Models
         public DateTime ShipmentDate { get; init; }
         public int Quantity { get; init; }
         public string Recipient { get; init; }
+        public string Region { get; init; } = "";
         public decimal SellingPriceAtShipment { get; init; }
-        public string CurrencyAtShipment { get; init; }
+        public string CurrencyAtShipment { get; init; } = "RUB";
         public decimal RateAtShipment { get; init; }
         public string RatesJson { get; init; } = "{}";
         public decimal TotalAmount { get; init; }

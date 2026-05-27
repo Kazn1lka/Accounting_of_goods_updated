@@ -1,4 +1,4 @@
-namespace WinFormsApp1
+﻿namespace WinFormsApp1
 {
     public partial class HistoryForm : Form
     {
@@ -52,25 +52,38 @@ namespace WinFormsApp1
             if (dgvHistory.Columns["Валюта"] != null) dgvHistory.Columns["Валюта"].Visible = false;
 
             var revenueByCurrency = new Dictionary<string, decimal>();
+            var lossByCurrency = new Dictionary<string, decimal>();
             var profitByCurrency = new Dictionary<string, decimal>();
 
             foreach (dynamic h in history)
             {
                 string currency = h.Валюта;
-                decimal revenue = (decimal)h.СуммаЧисло;
+                string type = h.Тип;
+                decimal amount = (decimal)h.СуммаЧисло;
                 decimal profit = (decimal)h.ПрибыльЧисло;
 
                 if (!revenueByCurrency.ContainsKey(currency)) revenueByCurrency[currency] = 0;
+                if (!lossByCurrency.ContainsKey(currency)) lossByCurrency[currency] = 0;
                 if (!profitByCurrency.ContainsKey(currency)) profitByCurrency[currency] = 0;
 
-                revenueByCurrency[currency] += revenue;
+                if (type == "Отгрузка")
+                {
+                    revenueByCurrency[currency] += amount;
+                }
+                else if (type == "Списание")
+                {
+                    lossByCurrency[currency] += -amount;
+                }
+
                 profitByCurrency[currency] += profit;
             }
 
             string revenueStr = string.Join(" + ", revenueByCurrency.Select(kv => $"{kv.Value:N2} {kv.Key}"));
+            string lossStr = string.Join(" + ", lossByCurrency.Select(kv => $"{kv.Value:N2} {kv.Key}"));
             string profitStr = string.Join(" + ", profitByCurrency.Select(kv => $"{kv.Value:N2} {kv.Key}"));
 
             lblTotalRevenue.Text = string.IsNullOrEmpty(revenueStr) ? "0,00" : revenueStr;
+            lblTotalLoss.Text = string.IsNullOrEmpty(lossStr) ? "0,00" : lossStr;
             lblTotalProfit.Text = string.IsNullOrEmpty(profitStr) ? "0,00" : profitStr;
         }
 

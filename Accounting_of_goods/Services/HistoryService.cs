@@ -1,4 +1,4 @@
-namespace WinFormsApp1.Services
+﻿namespace WinFormsApp1.Services
 {
     public class HistoryService : IHistoryService
     {
@@ -79,6 +79,7 @@ namespace WinFormsApp1.Services
                     Размер = s.Product.Size,
                     Кол_во = s.Quantity,
                     Получатель = s.Recipient,
+                    Регион = s.Region,
                     Причина = "",
                     Сумма = $"{Math.Round(s.SellingPriceAtShipment * rate * s.Quantity, 2)} {targetCurrency}",
                     Прибыль = $"{Math.Round((s.SellingPriceAtShipment - s.Product.PurchasePrice) * s.Quantity * rate, 2)} {targetCurrency}",
@@ -100,6 +101,7 @@ namespace WinFormsApp1.Services
                     Размер = w.Product.Size,
                     Кол_во = w.Quantity,
                     Получатель = "",
+                    Регион = "",
                     Причина = w.Reason,
                     Сумма = $"{-Math.Round(w.Product.PurchasePrice * w.Quantity * rate, 2)} {targetCurrency}",
                     Прибыль = $"{-Math.Round(w.Product.PurchasePrice * w.Quantity * rate, 2)} {targetCurrency}",
