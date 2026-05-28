@@ -1,4 +1,4 @@
-﻿
+
 using Accounting_of_goods;
 
 namespace Accounting_of_goodsTests.Tests
@@ -48,7 +48,6 @@ namespace Accounting_of_goodsTests.Tests
                     return;
                 }
 
-<<<<<<< HEAD
                 decimal res = CurrencyConverter.ConvertPrice(price);
 
                 Assert.AreEqual("USD", CurrencyConverter.CurrentCurrency);
@@ -61,20 +60,6 @@ namespace Accounting_of_goodsTests.Tests
             {
                 Assert.Inconclusive($"Тест пропущен из-за ошибки сети/API: {ex.Message}");
             }
-=======
-            if (CurrencyConverter.CurrentCurrency == "RUB")
-            {
-                Assert.AreEqual(1m, CurrencyConverter.CurrentRate);
-                Assert.AreEqual(price, res);
-            }
-            else
-            {
-                Assert.AreEqual("USD", CurrencyConverter.CurrentCurrency);
-                Assert.AreNotEqual(1m, CurrencyConverter.CurrentRate);
-                decimal expected = Math.Round(price * CurrencyConverter.CurrentRate, 2);
-                Assert.AreEqual(expected, res);
-            }
->>>>>>> 7d0919bd477418e6a314783969d578b61078b0c4
         }
     }
 }
