@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WinFormsApp1.Models;
+using System;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Accounting_of_goodsTests.Tests
 {
@@ -12,6 +15,7 @@ namespace Accounting_of_goodsTests.Tests
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
         }
+
         [TestMethod]
         public void AddCategory_DuplicateName_ShouldBlockSaving()
         {
@@ -48,6 +52,7 @@ namespace Accounting_of_goodsTests.Tests
                 Assert.AreEqual(1, categoryCount);
             }
         }
+
         [TestMethod]
         public void FilterHistory_ByDateAndText_ShouldReturnCorrectRecords()
         {
@@ -56,11 +61,17 @@ namespace Accounting_of_goodsTests.Tests
 
             using (var db = new ApplicationDbContext(options))
             {
+                db.Roles.Add(new Role { Id = 1, Name = "Admin" });
+                db.Users.Add(new User { Id = 1, RoleId = 1, Login = "admin", PasswordHash = "hash", FirstName = "A", LastName = "B" });
+                db.Categories.Add(new Category { Id = 1, Name = "Shoes" });
+                db.Products.Add(new Product { Id = 1, CategoryId = 1, Article = "001", Name = "Sneakers", Brand = "Nike", Size = "42", PurchasePrice = 1000 });
+                db.SaveChanges();
+
                 db.Shipments.AddRange(
-                    new Shipment { Quantity = 5, Recipient = "ООО Альфа", ShipmentDate = today.AddDays(-5) },
-                    new Shipment { Quantity = 10, Recipient = "Иван Иванов", ShipmentDate = today },
-                    new Shipment { Quantity = 2, Recipient = "Иван Петров", ShipmentDate = today },
-                    new Shipment { Quantity = 20, Recipient = "ЗАО Бета", ShipmentDate = today.AddDays(5) }
+                    new Shipment { UserId = 1, ProductId = 1, Quantity = 5, Recipient = "ООО Альфа", ShipmentDate = today.AddDays(-5), CurrencyAtShipment = "RUB", RateAtShipment = 1m },
+                    new Shipment { UserId = 1, ProductId = 1, Quantity = 10, Recipient = "Иван Иванов", ShipmentDate = today, CurrencyAtShipment = "RUB", RateAtShipment = 1m },
+                    new Shipment { UserId = 1, ProductId = 1, Quantity = 2, Recipient = "Иван Петров", ShipmentDate = today, CurrencyAtShipment = "RUB", RateAtShipment = 1m },
+                    new Shipment { UserId = 1, ProductId = 1, Quantity = 20, Recipient = "ЗАО Бета", ShipmentDate = today.AddDays(5), CurrencyAtShipment = "RUB", RateAtShipment = 1m }
                 );
                 db.SaveChanges();
             }

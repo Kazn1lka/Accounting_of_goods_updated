@@ -13,6 +13,14 @@ namespace Accounting_of_goodsTests.Tests
                 .Options;
         }
 
+        private void SeedRelations(ApplicationDbContext db)
+        {
+            if (!db.Roles.Any()) db.Roles.Add(new Role { Id = 1, Name = "Кладовщик" });
+            if (!db.Users.Any()) db.Users.Add(new User { Id = 1, RoleId = 1, Login = "test_user", PasswordHash = "123", FirstName = "Иван", LastName = "Иванов" });
+            if (!db.Categories.Any()) db.Categories.Add(new Category { Id = 1, Name = "Одежда" });
+            db.SaveChanges();
+        }
+
         [TestMethod]
         public void ShipProduct_EnoughStock_ShouldDecreaseStockAndCreateRecord()
         {
@@ -20,8 +28,10 @@ namespace Accounting_of_goodsTests.Tests
 
             using (var db = new ApplicationDbContext(options))
             {
+                SeedRelations(db);
                 var product = new Product
                 {
+                    Id = 1,
                     Article = "PRD-001",
                     Name = "Кофта1",
                     Brand = "Prada",
@@ -47,9 +57,13 @@ namespace Accounting_of_goodsTests.Tests
 
                     db.Shipments.Add(new Shipment
                     {
+                        UserId = 1,
+                        ProductId = productToShip.Id,
                         Quantity = quantityToShip,
                         Recipient = recipient,
-                        ShipmentDate = DateTime.UtcNow
+                        ShipmentDate = DateTime.UtcNow,
+                        CurrencyAtShipment = "RUB",
+                        RateAtShipment = 1m
                     });
 
                     db.SaveChanges();
@@ -78,8 +92,10 @@ namespace Accounting_of_goodsTests.Tests
 
             using (var db = new ApplicationDbContext(options))
             {
+                SeedRelations(db);
                 var product = new Product
                 {
+                    Id = 1,
                     Article = "PRD-002",
                     Name = "Кофта2",
                     Brand = "Prada",
@@ -103,9 +119,13 @@ namespace Accounting_of_goodsTests.Tests
                     productToShip.CurrentStock -= quantityToShip;
                     db.Shipments.Add(new Shipment
                     {
+                        UserId = 1,
+                        ProductId = productToShip.Id,
                         Quantity = quantityToShip,
                         Recipient = "ООО Ромашка",
-                        ShipmentDate = DateTime.UtcNow
+                        ShipmentDate = DateTime.UtcNow,
+                        CurrencyAtShipment = "RUB",
+                        RateAtShipment = 1m
                     });
                     db.SaveChanges();
                     isSuccess = true;
@@ -129,8 +149,10 @@ namespace Accounting_of_goodsTests.Tests
 
             using (var db = new ApplicationDbContext(options))
             {
+                SeedRelations(db);
                 db.Products.Add(new Product
                 {
+                    Id = 1,
                     Article = "TTT-001",
                     Name = "Тестовый товар",
                     Brand = "TestBrand",
@@ -176,8 +198,10 @@ namespace Accounting_of_goodsTests.Tests
 
             using (var db = new ApplicationDbContext(options))
             {
+                SeedRelations(db);
                 db.Products.Add(new Product
                 {
+                    Id = 1,
                     Article = "WWW-001",
                     Name = "Последняя куртка",
                     Brand = "Exclusive",
@@ -202,9 +226,13 @@ namespace Accounting_of_goodsTests.Tests
 
                     db.Shipments.Add(new Shipment
                     {
+                        UserId = 1,
+                        ProductId = productToShip.Id,
                         Quantity = quantityToShip,
                         Recipient = "Физ. лицо",
-                        ShipmentDate = DateTime.UtcNow
+                        ShipmentDate = DateTime.UtcNow,
+                        CurrencyAtShipment = "RUB",
+                        RateAtShipment = 1m
                     });
 
                     db.SaveChanges();

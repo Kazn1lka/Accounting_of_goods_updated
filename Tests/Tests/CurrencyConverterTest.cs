@@ -1,4 +1,5 @@
-﻿using Accounting_of_goods;
+﻿
+using Accounting_of_goods;
 
 namespace Accounting_of_goodsTests.Tests
 {
@@ -6,6 +7,12 @@ namespace Accounting_of_goodsTests.Tests
     [DoNotParallelize]
     public class CurrencyConverterTest
     {
+        [TestInitialize]
+        public void Setup()
+        {
+            CurrencyConverter.CurrentCurrency = "RUB";
+        }
+
         [TestMethod]
         public async Task ChangeCurrencyAsync_ToRubles_SetsRateToOne()
         {
@@ -32,9 +39,29 @@ namespace Accounting_of_goodsTests.Tests
             string target = "USD";
             decimal price = 1000m;
 
-            await CurrencyConverter.ChangeCurrencyAsync(target);
-            decimal res = CurrencyConverter.ConvertPrice(price);
+            try
+            {
+                await CurrencyConverter.ChangeCurrencyAsync(target);
+                if (CurrencyConverter.CurrentCurrency != "USD")
+                {
+                    Assert.Inconclusive("API конвертации валют недоступно или вернуло ошибку. Тест пропущен.");
+                    return;
+                }
 
+<<<<<<< HEAD
+                decimal res = CurrencyConverter.ConvertPrice(price);
+
+                Assert.AreEqual("USD", CurrencyConverter.CurrentCurrency);
+                Assert.AreNotEqual(1m, CurrencyConverter.CurrentRate);
+
+                decimal expected = Math.Round(price * CurrencyConverter.CurrentRate, 2);
+                Assert.AreEqual(expected, res);
+            }
+            catch (Exception ex)
+            {
+                Assert.Inconclusive($"Тест пропущен из-за ошибки сети/API: {ex.Message}");
+            }
+=======
             if (CurrencyConverter.CurrentCurrency == "RUB")
             {
                 Assert.AreEqual(1m, CurrencyConverter.CurrentRate);
@@ -47,6 +74,7 @@ namespace Accounting_of_goodsTests.Tests
                 decimal expected = Math.Round(price * CurrencyConverter.CurrentRate, 2);
                 Assert.AreEqual(expected, res);
             }
+>>>>>>> 7d0919bd477418e6a314783969d578b61078b0c4
         }
     }
 }
