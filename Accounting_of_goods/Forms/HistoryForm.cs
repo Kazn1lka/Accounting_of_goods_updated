@@ -1,4 +1,4 @@
-﻿namespace WinFormsApp1
+namespace WinFormsApp1
 {
     public partial class HistoryForm : Form
     {
@@ -50,6 +50,7 @@
             if (dgvHistory.Columns["СуммаЧисло"] != null) dgvHistory.Columns["СуммаЧисло"].Visible = false;
             if (dgvHistory.Columns["ПрибыльЧисло"] != null) dgvHistory.Columns["ПрибыльЧисло"].Visible = false;
             if (dgvHistory.Columns["Валюта"] != null) dgvHistory.Columns["Валюта"].Visible = false;
+            if (dgvHistory.Columns["Регион"] != null) dgvHistory.Columns["Регион"].Visible = false;
 
             var revenueByCurrency = new Dictionary<string, decimal>();
             var lossByCurrency = new Dictionary<string, decimal>();

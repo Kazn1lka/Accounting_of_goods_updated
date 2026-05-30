@@ -1,4 +1,4 @@
-﻿namespace WinFormsApp1
+namespace WinFormsApp1
 {
     public partial class dgvCategories : Form
     {
@@ -27,12 +27,12 @@
         {
             if (dataGridView1.Columns["EditCol"] == null)
             {
-                var editCol = new DataGridViewButtonColumn { Name = "EditCol", HeaderText = "", Text = "вњЏпёЏ", UseColumnTextForButtonValue = true, Width = 40 };
+                var editCol = new DataGridViewButtonColumn { Name = "EditCol", HeaderText = "", Text = "✎", UseColumnTextForButtonValue = true, Width = 40 };
                 dataGridView1.Columns.Add(editCol);
             }
             if (dataGridView1.Columns["DeleteCol"] == null)
             {
-                var delCol = new DataGridViewButtonColumn { Name = "DeleteCol", HeaderText = "", Text = "рџ—‘пёЏ", UseColumnTextForButtonValue = true, Width = 40 };
+                var delCol = new DataGridViewButtonColumn { Name = "DeleteCol", HeaderText = "", Text = "✕", UseColumnTextForButtonValue = true, Width = 40 };
                 dataGridView1.Columns.Add(delCol);
             }
         }
